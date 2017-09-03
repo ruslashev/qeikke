@@ -20,17 +20,6 @@
 #include <string>
 
 //==============================================================================
-//  Texture_opengl
-//==============================================================================
-class Texture_opengl : public Texture {
-public:
-  Texture_opengl(const std::string & name) : Texture(name) {};
-
-  bool upload_texture();
-private:
-};
-
-//==============================================================================
 //  Renderer_opengl
 //==============================================================================
 class Renderer_opengl : public Renderer {

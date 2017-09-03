@@ -36,10 +36,11 @@ public:
 
   void set_image(Image* image);
   void set_image(int index, Image* image);
-  virtual bool upload_texture()=0;
 
   void clear();
   void set_num_images(int count);
+
+  bool upload_texture();
 protected:
   std::vector<Image *> m_images;
   std::string m_name;
