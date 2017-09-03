@@ -33,30 +33,6 @@ enum Frustum_plane {
 };
 
 //==============================================================================
-//  Camera
-//==============================================================================
-class Camera : public Controllable_object {
-public:
-  Camera();
-
-  void set_type(const Camera_type type) { m_type = type; }
-  Camera_type get_type() const { return m_type; }
-
-  void set_perspective(float fov_y, float near_plane, float far_plane);
-  void get_perspective(float &fov_y, float &near_plane, float &far_plane);
-
-  void update_frustum();
-  Plane & get_frustum_plane(int index) const { return (Plane &)m_frustum_planes[index]; }
-private:
-  float m_near_plane;
-  float m_far_plane;
-  float m_fov_y;
-
-  Camera_type m_type;
-  Plane m_frustum_planes[FRUSTUM_PLANES];
-};
-
-//==============================================================================
 //  Camera_controller_fps
 //==============================================================================
 class Camera_controller_fps : public Controller {
@@ -88,13 +64,33 @@ private:
 };
 
 //==============================================================================
-//  Camera_fps
+//  Camera
 //==============================================================================
-class Camera_fps : public Camera {
+class Camera : public Controllable_object {
 public:
-  Camera_fps();
-  ~Camera_fps();
+  Camera();
+  ~Camera();
+
+  void set_type(const Camera_type type) { m_type = type; }
+  Camera_type get_type() const { return m_type; }
+
+  void set_perspective(float fov_y, float near_plane, float far_plane);
+  void get_perspective(float &fov_y, float &near_plane, float &far_plane);
+
+  void update_frustum();
+  Plane & get_frustum_plane(int index) const { return (Plane &)m_frustum_planes[index]; }
+
+  void update_view_angles(float xrel, float yrel);
 private:
+  float pitch, yaw;
+
+  float m_near_plane;
+  float m_far_plane;
+  float m_fov_y;
+
+  Camera_type m_type;
+  Plane m_frustum_planes[FRUSTUM_PLANES];
+
   Camera_controller_fps* m_control_fps;
 };
 

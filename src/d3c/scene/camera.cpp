@@ -12,6 +12,35 @@ Camera::Camera() : Controllable_object() {
   m_type = CAM_3D;
 
   log_init << "Camera initialization" << endl;
+
+  m_control_fps = new Camera_controller_fps();
+  set_controller( m_control_fps );
+  set_controlled(true);
+
+  pitch = yaw = 0;
+}
+
+Camera::~Camera() {
+  delete m_control_fps;
+}
+
+const float sensitivity = 3.f, m_yaw = 0.022, m_pitch = 0.022
+, pitch_max = 89.998f;
+void Camera::update_view_angles(float xrel, float yrel) {
+  yaw += xrel * sensitivity * m_yaw;
+  pitch -= yrel * sensitivity * m_pitch;
+
+  if (yaw >= 360.f)
+    yaw -= 360.f;
+  if (yaw < 0.f)
+    yaw += 360.f;
+
+  if (pitch > pitch_max)
+    pitch = pitch_max;
+  if (pitch < -pitch_max)
+    pitch = -pitch_max;
+
+  m_control_fps->set_rotation(deg_to_rad(yaw), deg_to_rad(pitch));
 }
 
 //==============================================================================
@@ -168,21 +197,5 @@ void Camera_controller_fps::update(void) {
     strafe(speed);
   }
 */
-}
-
-//==============================================================================
-//  Camera_fps::Camera_fps()
-//==============================================================================
-Camera_fps::Camera_fps() {
-  m_control_fps = new Camera_controller_fps();
-  set_controller( m_control_fps );
-  set_controlled(true);
-};
-
-//==============================================================================
-//  Camera_fps::~Camera_fps()
-//==============================================================================
-Camera_fps::~Camera_fps() {
-  delete m_control_fps;
 }
 

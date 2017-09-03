@@ -2,7 +2,6 @@
 #include "../engine/screen.hh"
 #include "../engine/camera.hh"
 
-#include "../d3c/framework.hpp"
 #include "../d3c/misc/log.hpp"
 #include "../d3c/model/batch.hpp"
 #include "../d3c/scene/camera.hpp"
@@ -15,7 +14,7 @@
 screen *g_screen = new screen("qeikke", 800, 600);
 
 Renderer* renderer = (Renderer*)new Renderer();
-Camera* d3c_cam = new Camera_fps();
+Camera* d3c_cam = new Camera();
 GLfloat light_pos[] = {150.0f, 130.0f, 120.0f, 0.0f};
 GLfloat light_pos2[] = {-120.0f, +120.0f, -120.0f, 0.0f};
 bool use_collision = true;
@@ -30,12 +29,15 @@ static void key_event(char key, bool down) {
 }
 
 static void mouse_motion_event(float xrel, float yrel, int x, int y) {
+  d3c_cam->update_view_angles(xrel, yrel);
 }
 
 static void mouse_button_event(int button, bool down, int x, int y) {
 }
 
 void load() {
+  g_screen->lock_mouse();
+
   d3c_cam->get_controller()->set_position( Vector3f(100,100,50) );
 
   renderer->init();
