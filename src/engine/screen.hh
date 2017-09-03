@@ -30,6 +30,10 @@ public:
   int get_window_width();
   int get_window_height();
   unsigned long long int get_frame_idx();
+  // TODO: introduced in porting doom3_collision
+  int get_mouse_x();
+  int get_mouse_y();
+  int set_mouse_position(int x, int y);
 };
 
 extern screen *g_screen;
