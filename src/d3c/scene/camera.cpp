@@ -2,7 +2,6 @@
 #include "../misc/log.hpp"
 
 #include "../renderer.hpp"
-#include "../base.hpp"
 #include "../../engine/screen.hh"
 
 //==============================================================================
@@ -153,25 +152,6 @@ void Camera_controller_fps::move(float speed) {
 //  Camera_controller_fps::update()
 //==============================================================================
 void Camera_controller_fps::update(void) {
-  int middle_x = g_screen->get_window_width() / 2;
-  int middle_y = g_screen->get_window_height() / 2;
-  int mouse_x = g_screen->get_mouse_x();
-  int mouse_y = g_screen->get_mouse_y();
-  float angle_y = 0.0f;
-  float angle_z = 0.0f;
-
-  // If our cursor is not in the middle
-  if((mouse_x != middle_x) || (mouse_y != middle_y) ) {
-    // Set the mouse position to the middle of our window
-    // g_screen->set_mouse_position(middle_x,middle_y);
-
-    // Get the direction the mouse moved in, but bring the number down to a reasonable amount
-    angle_y = (float)( (middle_x - mouse_x) ) / 500.0f;
-    angle_z = (float)( (middle_y - mouse_y) ) / 500.0f;
-
-    // set_rotation(angle_y, angle_z);
-  }
-
   /*
   float speed = m_speed * base->get_frame_interval();
 

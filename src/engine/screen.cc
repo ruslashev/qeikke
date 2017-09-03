@@ -174,18 +174,3 @@ unsigned long long int screen::get_frame_idx() {
   return _frame_idx;
 }
 
-// TODO: introduced in porting doom3_collision
-int screen::get_mouse_x() {
-  int x;
-  SDL_GetMouseState(&x, nullptr);
-}
-
-int screen::get_mouse_y() {
-  int y;
-  SDL_GetMouseState(nullptr, &y);
-}
-
-int screen::set_mouse_position(int x, int y) {
-  SDL_WarpMouseInWindow(_window, x, y);
-}
-

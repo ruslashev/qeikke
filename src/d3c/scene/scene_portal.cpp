@@ -13,7 +13,6 @@
 #include "scene_portal.hpp"
 #include "../misc/log.hpp"
 #include "../math/vector.hpp"
-#include "../base.hpp"
 #include "camera.hpp"
 #include "../../engine/screen.hh"
 
@@ -151,40 +150,7 @@ void Portal_portal::render_from_area(Camera* camera, int index, Vector2i min, Ve
 //	0 = invisible (outside frustrum), 1 = visible, -1 = intersects frontplane
 //==============================================================================
 int Portal_portal::check_visibility(Camera* camera) {
-  int num_points = m_points.size();
-  int i;
-
-  // check front plane.
-  bool all_front = true;
-  bool all_back  = true;
-
-  for(i=0; i<num_points; ++i) {
-    if(!camera->get_frustum_plane(FRUSTUM_FRONT).is_in_front(m_points[i])) {
-      all_front = false;
-    } else {
-      all_back = false;
-    }
-  }
-  if(all_back) {
-    return 0;
-  }
-
-  // check the other planes..
-  for(int j=FRUSTUM_FRONT+1; j<FRUSTUM_BACK; ++j) {
-    bool all_back = true;
-    for(i=0; i<num_points; ++i) {
-      if(camera->get_frustum_plane(j).is_in_front(m_points[i])) {
-        all_back = false;
-        break;
-      }
-    }
-    if(all_back) {
-      return 0;
-    }
-  }
-
-  // return 1 if portal is in frustum and -1 if portal intersects frontplane
-  return (all_front?1:-1);
+  return 1;
 }
 
 //==============================================================================
