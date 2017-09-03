@@ -2,7 +2,6 @@
 #include "../engine/screen.hh"
 #include "../engine/camera.hh"
 
-#include "../d3c/renderer_opengl/renderer_opengl.hpp"
 #include "../d3c/framework.hpp"
 #include "../d3c/misc/log.hpp"
 #include "../d3c/model/batch.hpp"
@@ -15,7 +14,7 @@
 
 screen *g_screen = new screen("qeikke", 800, 600);
 
-Renderer* renderer = (Renderer*)new Renderer_opengl();
+Renderer* renderer = (Renderer*)new Renderer();
 Camera* d3c_cam = new Camera_fps();
 GLfloat light_pos[] = {150.0f, 130.0f, 120.0f, 0.0f};
 GLfloat light_pos2[] = {-120.0f, +120.0f, -120.0f, 0.0f};

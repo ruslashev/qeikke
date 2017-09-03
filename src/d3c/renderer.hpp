@@ -31,24 +31,9 @@ public:
   Renderer() : m_frame(0) {}
   ~Renderer() {}
 
-  // init
-  virtual void init()=0;
-  virtual void close()=0;
-
-  // viewport
-  virtual void set_viewport(const int left, const int top, const int width, const int height)=0;
-  virtual void set_renderport(const int left, const int top, const int width, const int height)=0;
-  virtual void set_view(Camera* camera)=0;
-
-  // batch
-  virtual Batch* create_batch()=0;
-
   // texture
-  virtual Texture* create_texture(const std::string & name)=0;
   Texture* get_texture_from_file(const std::string & name);
   Texture* get_texture(const std::string & name);
-  virtual void upload_textures()=0;
-  virtual void bind_texture(Texture* texture)=0;
 
   // unproject
   inline bool project(Vector3f vec, int &x, int &y) {
@@ -79,6 +64,24 @@ public:
   // frames..
   inline int get_frame() { return m_frame; }
   void next_frame() { m_frame++; }
+
+  // Renderer_opengl
+  // init
+  void init();
+  void close();
+
+  // viewport
+  void set_viewport(const int left, const int top, const int width, const int height);
+  void set_renderport(const int left, const int top, const int width, const int height);
+  void set_view(Camera* camera);
+
+  // batch
+  Batch* create_batch();
+
+  // texture
+  Texture* create_texture(const std::string & name);
+  void upload_textures();
+  void bind_texture(Texture* texture);
 protected:
   int m_frame;
   std::map<std::string, Texture*> m_texture_map;
