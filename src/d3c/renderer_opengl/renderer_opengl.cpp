@@ -22,117 +22,6 @@
 #include <GL/glu.h>
 
 //==============================================================================
-//
-//==============================================================================
-GLenum getGLType(const Attribute_format attFormat) {
-  switch (attFormat){
-    case ATT_FLOAT:         return GL_FLOAT;
-    case ATT_UNSIGNED_BYTE: return GL_UNSIGNED_BYTE;
-    default:
-                            return 0;
-  }
-}
-
-GLenum getGLPrimitive(const Primitive_type primType){
-  switch (primType){
-    case PRIM_TRIANGLES:      return GL_TRIANGLES;
-    case PRIM_QUADS:          return GL_QUADS;
-    case PRIM_TRIANGLE_STRIP: return GL_TRIANGLE_STRIP;
-    default:
-                              return 0;
-  }
-}
-
-GLenum arrayType[] = { GL_VERTEX_ARRAY, GL_NORMAL_ARRAY, GL_TEXTURE_COORD_ARRAY, GL_COLOR_ARRAY };
-
-//==============================================================================
-//  Batch_opengl::Batch_opengl()
-//==============================================================================
-Batch_opengl::Batch_opengl() {
-  m_indexbuffer=0;
-  m_vertexbuffer=0;
-}
-
-//==============================================================================
-//  Batch_opengl::upload_vertexbuffer()
-//==============================================================================
-bool Batch_opengl::upload_vertexbuffer() {
-  glGenBuffersARB(1, &m_vertexbuffer);
-  glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_vertexbuffer);
-  glBufferDataARB(GL_ARRAY_BUFFER_ARB, m_num_vertices * m_vertex_size, m_vertices, GL_STATIC_DRAW_ARB);
-
-  glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
-  if (m_indices > 0) {
-    glGenBuffersARB(1, &m_indexbuffer);
-    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_indexbuffer);
-    glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_num_indices * m_index_size, m_indices, GL_STATIC_DRAW_ARB);
-    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
-  }
-
-  return true;
-}
-
-//==============================================================================
-//  Batch_opengl::render()
-//==============================================================================
-void Batch_opengl::render() {
-  unsigned int i, num_formats = m_formats.size();
-
-  if(!m_vertexbuffer){
-    upload_vertexbuffer();
-  }
-
-  if (m_vertexbuffer != 0) {
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_vertexbuffer);
-  }
-
-  for (i = 0; i < num_formats; ++i) {
-    Format format = m_formats[i];
-    GLenum type = getGLType(format.att_format);
-    GLenum array = arrayType[format.att_type];
-
-    char *basePointer = (m_vertexbuffer)? NULL : get_vertices();
-
-    switch (format.att_type) {
-      case ATT_VERTEX:
-        glVertexPointer(format.size, type, get_vertex_size(), basePointer + format.offset);
-        break;
-      case ATT_NORMAL:
-        glNormalPointer(type, get_vertex_size(), basePointer + format.offset);
-        break;
-      case ATT_TEXCOORD:
-        glClientActiveTextureARB(GL_TEXTURE0_ARB + format.index);
-        if(!format.index)
-          glTexCoordPointer(format.size, type, get_vertex_size(), basePointer + format.offset);
-        break;
-      case ATT_COLOR:
-        glColorPointer(format.size, type, get_vertex_size(), basePointer + format.offset);
-        break;
-    }
-    glEnableClientState(array);
-  }
-
-  if (m_indexbuffer) {
-    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_indexbuffer);
-    glDrawElements(getGLPrimitive( get_primitive_type() ), get_index_count(), get_index_size() == 2? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, NULL);
-    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
-  } else {
-    glDrawElements(getGLPrimitive( get_primitive_type() ), get_index_count(), get_index_size() == 2? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, get_indices());
-  }
-
-  for (i = 0; i < num_formats; ++i) {
-    if (get_format(i).att_type == ATT_TEXCOORD) {
-      glClientActiveTextureARB(GL_TEXTURE0_ARB + get_format(i).index);
-    }
-    glDisableClientState(arrayType[get_format(i).att_type]);
-  }
-
-  if (m_vertexbuffer) {
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
-  }
-}
-
-//==============================================================================
 //  Texture_opengl::upload_texture()
 //==============================================================================
 bool Texture_opengl::upload_texture() {
@@ -310,7 +199,7 @@ void Renderer_opengl::set_viewport(const int left, const int top, const int widt
 //  Renderer_opengl::create_batch()
 //==============================================================================
 Batch* Renderer_opengl::create_batch() {
-  Batch_opengl* batch = new Batch_opengl();
+  Batch* batch = new Batch();
 
   return (Batch *)batch;
 }

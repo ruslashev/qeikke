@@ -36,9 +36,6 @@ enum Attribute_format {
   ATT_UNSIGNED_BYTE = 1,
 };
 
-float get_value(const char *src, const unsigned int index, const Attribute_format att_format);
-unsigned int get_size(const Attribute_format att_format);
-
 struct Format {
   Attribute_type att_type;
   Attribute_format att_format;
@@ -59,14 +56,6 @@ public:
 
   unsigned int get_index(const unsigned int index) const {
     return (m_index_size == 2)? ((unsigned short *) m_indices)[index] : ((unsigned int *) m_indices)[index];
-  }
-
-  void set_index(const unsigned int index, const unsigned int value) {
-    if (m_index_size == 2) {
-      ((unsigned short *) m_indices)[index] = value;
-    } else {
-      ((unsigned int *) m_indices)[index] = value;
-    }
   }
 
   char *get_vertices() const { return m_vertices; }
@@ -105,18 +94,12 @@ public:
     m_formats.add(format);
   }
 
-  bool find_attribute(const Attribute_type att_type, const unsigned int index = 0, unsigned int *where = NULL) const;
-  bool insert_attribute(const Attribute_type att_type, const Attribute_format att_format, const unsigned int size, const unsigned int index = 0);
-  bool remove_attribute(const Attribute_type att_type, const unsigned int index = 0);
-
-  virtual void render()=0;
-  bool add_normals();
-
-  void read_from_file(FILE *file);
-  void write_to_file(std::ofstream &file);
-  void write_to_file(const char *fileName);
-  void write_to_file(FILE *file);
+  void render();
+  bool upload_vertexbuffer();
 protected:
+  unsigned int m_vertexbuffer;
+  unsigned int m_indexbuffer;
+
   char *m_vertices;
   char *m_indices;
 

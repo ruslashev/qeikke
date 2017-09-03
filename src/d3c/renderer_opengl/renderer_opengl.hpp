@@ -30,21 +30,6 @@ public:
 private:
 };
 
-
-//==============================================================================
-//  Batch_opengl
-//==============================================================================
-class Batch_opengl : public Batch {
-public:
-  Batch_opengl();
-
-  void render();
-  bool upload_vertexbuffer();
-private:
-  unsigned int m_vertexbuffer;
-  unsigned int m_indexbuffer;
-};
-
 //==============================================================================
 //  Renderer_opengl
 //==============================================================================

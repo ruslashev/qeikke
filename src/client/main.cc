@@ -1,5 +1,6 @@
 #include "../engine/utils.hh"
 #include "../engine/screen.hh"
+#include "../engine/camera.hh"
 
 #include "../d3c/renderer_opengl/renderer_opengl.hpp"
 #include "../d3c/framework.hpp"
@@ -9,16 +10,22 @@
 #include "../d3c/scene/scene_portal.hpp"
 #include "../d3c/physics/collision_set_bsp.hpp"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 screen *g_screen = new screen("qeikke", 800, 600);
 
 Renderer* renderer = (Renderer*)new Renderer_opengl();
-Camera* camera = new Camera_fps();
+Camera* d3c_cam = new Camera_fps();
 GLfloat light_pos[] = {150.0f, 130.0f, 120.0f, 0.0f};
 GLfloat light_pos2[] = {-120.0f, +120.0f, -120.0f, 0.0f};
 bool use_collision = true;
 bool tree_debug = false;
 Scene_portal scene;
 Collision_set_bsp bsp;
+
+float fov = 45.f;
+camera *cam = new camera();
 
 static void key_event(char key, bool down) {
 }
@@ -30,7 +37,7 @@ static void mouse_button_event(int button, bool down, int x, int y) {
 }
 
 void load() {
-  camera->get_controller()->set_position( Vector3f(100,100,50) );
+  d3c_cam->get_controller()->set_position( Vector3f(100,100,50) );
 
   renderer->init();
   renderer->set_viewport(0, 0, 800, 600);
@@ -98,13 +105,18 @@ void render_debug_lines() {
 }
 
 static void draw(double alpha) {
+  glm::mat4 projection = glm::perspective(glm::radians(fov)
+      , (float)g_screen->get_window_width() / (float)g_screen->get_window_height()
+      , 0.1f, 10000.f)
+    , view = cam->compute_view_mat();
+
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
   glLightfv(GL_LIGHT1, GL_POSITION, light_pos2);
 
-  Vector3f start = camera->get_position();
-  camera->update();
-  Vector3f end = camera->get_position();
+  Vector3f start = d3c_cam->get_position();
+  d3c_cam->update();
+  Vector3f end = d3c_cam->get_position();
 
   if(use_collision) {
     Vector3f end_collided = start;
@@ -112,15 +124,15 @@ static void draw(double alpha) {
       end_collided = end;
       bsp.trace( start, end, 10.0f);
     }
-    camera->get_controller()->set_position(end_collided);
+    d3c_cam->get_controller()->set_position(end_collided);
   }
 
-  renderer->set_view(camera);
+  renderer->set_view(d3c_cam);
 
   glEnable(GL_LIGHTING);
   glEnable(GL_TEXTURE_2D);
 
-  scene.render(camera);
+  scene.render(d3c_cam);
 
   glDisable(GL_TEXTURE_2D);
   glDisable(GL_LIGHTING);
