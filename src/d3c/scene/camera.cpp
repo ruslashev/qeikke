@@ -33,6 +33,10 @@ void Camera::update_view_angles(float xrel, float yrel) {
   m_control_fps->set_rotation(deg_to_rad(-yaw), deg_to_rad(-pitch));
 }
 
+void Camera::update(int move, int strafe) {
+  m_control_fps->update(move, strafe);
+}
+
 //==============================================================================
 //  Camera::set_perspective()
 //==============================================================================
@@ -167,25 +171,28 @@ void Camera_controller_fps::move(float speed) {
   m_view += movement;
 }
 
-//==============================================================================
-//  Camera_controller_fps::update()
-//==============================================================================
-void Camera_controller_fps::update(void) {
-  /*
-  float speed = m_speed * base->get_frame_interval();
-
-  if( base->is_key_pressed(KEY_UP) || base->is_key_pressed(KEY_W) ) {
-    move(speed);
+void Camera_controller_fps::update(int imove, int istrafe) {
+  float m_speed = 5.f, dt = 0.0333f, speed = m_speed * dt
+    , speeds2 = fast_inv_sqrt(2) * m_speed * dt;
+  if (imove != 0 && istrafe == 0) {
+    if (imove > 0)
+      move(speed);
+    else
+      move(-speed);
+  } else if (imove == 0 && istrafe != 0) {
+    if (istrafe > 0)
+      strafe(speed);
+    else
+      strafe(-speed);
+  } else if (imove != 0 && istrafe != 0) {
+    if (imove > 0)
+      move(speeds2);
+    else
+      move(-speeds2);
+    if (istrafe > 0)
+      strafe(speeds2);
+    else
+      strafe(-speeds2);
   }
-  if( base->is_key_pressed(KEY_DOWN) || base->is_key_pressed(KEY_S) ) {
-    move(-speed);
-  }
-  if( base->is_key_pressed(KEY_LEFT) || base->is_key_pressed(KEY_A) ) {
-    strafe(-speed);
-  }
-  if( base->is_key_pressed(KEY_RIGHT) || base->is_key_pressed(KEY_D) ) {
-    strafe(speed);
-  }
-*/
 }
 

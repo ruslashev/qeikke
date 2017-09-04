@@ -24,8 +24,31 @@ Collision_set_bsp bsp;
 
 float fov = 45.f;
 camera *cam = new camera();
+int move = 0, strafe = 0;
+bool wireframe = false;
 
 static void key_event(char key, bool down) {
+  static bool forward = false, backward = false, left = false, right = false;
+  switch (key) {
+    case 'w': forward  = down; break;
+    case 's': backward = down; break;
+    case 'd': right    = down; break;
+    case 'a': left     = down; break;
+    case 'f': if (down) wireframe = !wireframe; break;
+    default: break;
+  }
+  if (forward == backward)
+    move = 0;
+  else if (forward)
+    move = 1;
+  else if (backward)
+    move = -1;
+  if (right == left)
+    strafe = 0;
+  else if (right)
+    strafe = 1;
+  else if (left)
+    strafe = -1;
 }
 
 static void mouse_motion_event(float xrel, float yrel, int x, int y) {
@@ -116,7 +139,7 @@ static void draw(double alpha) {
   glLightfv(GL_LIGHT1, GL_POSITION, light_pos2);
 
   Vector3f start = d3c_cam->get_position();
-  d3c_cam->update();
+  d3c_cam->update(move, strafe);
   Vector3f end = d3c_cam->get_position();
 
   if(use_collision) {
