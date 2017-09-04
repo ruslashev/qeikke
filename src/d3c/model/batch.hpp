@@ -18,27 +18,11 @@
 #include <fstream>
 #include "../misc/set.hpp"
 
-enum Primitive_type {
-  PRIM_TRIANGLES      = 0,
-  PRIM_QUADS          = 1,
-  PRIM_TRIANGLE_STRIP = 2,
-};
-
-enum Attribute_type {
-  ATT_VERTEX   = 0,
-  ATT_NORMAL   = 1,
-  ATT_TEXCOORD = 2,
-  ATT_COLOR    = 3,
-};
-
-enum Attribute_format {
-  ATT_FLOAT         = 0,
-  ATT_UNSIGNED_BYTE = 1,
-};
+#include <GL/glew.h>
 
 struct Format {
-  Attribute_type att_type;
-  Attribute_format att_format;
+  unsigned int att_type;
+  unsigned int att_format;
   unsigned int size;
   unsigned int offset;
   unsigned int index;
@@ -68,8 +52,8 @@ public:
   const unsigned int get_format_count() const { return m_formats.size(); }
   const Format &get_format(unsigned int index) const { return m_formats[index]; }
 
-  const Primitive_type get_primitive_type() const { return m_primitive_type; }
-  void set_primitive_type(const Primitive_type prim_type) { m_primitive_type = prim_type; }
+  const unsigned int get_primitive_type() const { return m_primitive_type; }
+  void set_primitive_type(const unsigned int prim_type) { m_primitive_type = prim_type; }
 
   void set_vertices(void *vertex_array, const unsigned int vertex_count, const unsigned int size) {
     m_vertices = (char *) vertex_array;
@@ -82,7 +66,7 @@ public:
     m_index_size = size;
   }
 
-  void add_format(const Attribute_type att_type, const Attribute_format att_format, const unsigned int size, const unsigned int offset, const unsigned int index = 0) {
+  void add_format(const unsigned int att_type, const unsigned int att_format, const unsigned int size, const unsigned int offset, const unsigned int index = 0) {
     Format format;
 
     format.att_type = att_type;
@@ -95,7 +79,7 @@ public:
   }
 
   void render();
-  bool upload_vertexbuffer();
+  void upload_vertexbuffer();
 protected:
   unsigned int m_vertexbuffer;
   unsigned int m_indexbuffer;
@@ -109,7 +93,7 @@ protected:
   unsigned int m_index_size;
 
   Set<Format> m_formats;
-  Primitive_type m_primitive_type;
+  unsigned int m_primitive_type;
 };
 
 #endif /* _BATCH_ */

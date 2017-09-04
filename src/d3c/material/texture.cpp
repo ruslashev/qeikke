@@ -150,7 +150,7 @@ bool Texture::upload_texture() {
   glBindTexture( dimension, m_tex_id);
 
   if(m_dimension != TEX_CUBE) {
-    gluBuild2DMipmaps( dimension, /*format*/GL_COMPRESSED_RGB_ARB, m_images[0]->get_image_width(), m_images[0]->get_image_height(),
+    gluBuild2DMipmaps( dimension, /*format*/GL_COMPRESSED_RGB, m_images[0]->get_image_width(), m_images[0]->get_image_height(),
         format, type, m_images[0]->get_pixels());
   } else {
     if(m_images.size()<6) {
@@ -159,12 +159,12 @@ bool Texture::upload_texture() {
     }
 
     GLuint cube_map_faces[] = {
-      GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB,
-      GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB,
-      GL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB,
-      GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB,
-      GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB,
-      GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB
+      GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+      GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+      GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+      GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+      GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+      GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
     };
 
     for( int i=0; i<6; i++ ) {

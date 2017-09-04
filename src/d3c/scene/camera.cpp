@@ -172,7 +172,7 @@ void Camera_controller_fps::move(float speed) {
 }
 
 void Camera_controller_fps::update(int imove, int istrafe) {
-  float m_speed = 5.f, dt = 0.0333f, speed = m_speed * dt
+  float m_speed = 4.f, dt = 0.0333f, speed = m_speed * dt
     , speeds2 = fast_inv_sqrt(2) * m_speed * dt;
   if (imove != 0 && istrafe == 0) {
     if (imove > 0)

@@ -377,10 +377,10 @@ void Portal_area::read_from_file(std::ifstream &file) {
   for(int i=0; i<num_surfaces; i++) {
     // create new batch...
     Batch* batch = renderer->create_batch();
-    batch->add_format( ATT_VERTEX,   ATT_FLOAT, 3, 0, 0);
-    batch->add_format( ATT_TEXCOORD, ATT_FLOAT, 2,12, 0);
-    batch->add_format( ATT_NORMAL,   ATT_FLOAT, 3,20, 0);
-    batch->set_primitive_type(PRIM_TRIANGLES);
+    batch->add_format( GL_VERTEX_ARRAY,   GL_FLOAT, 3,  0, 0);
+    batch->add_format( GL_TEXTURE_COORD_ARRAY, GL_FLOAT, 2, 12, 0);
+    batch->add_format( GL_NORMAL_ARRAY,   GL_FLOAT, 3, 20, 0);
+    batch->set_primitive_type(GL_TRIANGLES);
     Set<Vertex_doom3> *vertices = new Set<Vertex_doom3>();
     Set<unsigned int> *indices = new Set<unsigned int>();
 

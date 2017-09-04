@@ -14,8 +14,6 @@
 #include "../math/vector.hpp"
 #include "../misc/log.hpp"
 
-#include <GL/glew.h>
-
 //==============================================================================
 //  Batch::Batch()
 //==============================================================================
@@ -49,40 +47,18 @@ void Batch::clean() {
   m_indices = NULL;
 }
 
-bool Batch::upload_vertexbuffer() {
-  glGenBuffersARB(1, &m_vertexbuffer);
-  glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_vertexbuffer);
-  glBufferDataARB(GL_ARRAY_BUFFER_ARB, m_num_vertices * m_vertex_size, m_vertices, GL_STATIC_DRAW_ARB);
+void Batch::upload_vertexbuffer() {
+  glGenBuffers(1, &m_vertexbuffer);
+  glBindBuffer(GL_ARRAY_BUFFER, m_vertexbuffer);
+  glBufferData(GL_ARRAY_BUFFER, m_num_vertices * m_vertex_size, m_vertices, GL_STATIC_DRAW);
 
-  glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
-  if (m_indices > 0) {
-    glGenBuffersARB(1, &m_indexbuffer);
-    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_indexbuffer);
-    glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_num_indices * m_index_size, m_indices, GL_STATIC_DRAW_ARB);
-    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
-  }
+  glGenBuffers(1, &m_indexbuffer);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexbuffer);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_num_indices * m_index_size, m_indices, GL_STATIC_DRAW);
 
-  return true;
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
-
-GLenum getGLType(const Attribute_format attFormat) {
-  switch (attFormat){
-    case ATT_FLOAT:         return GL_FLOAT;
-    case ATT_UNSIGNED_BYTE: return GL_UNSIGNED_BYTE;
-    default: return 0;
-  }
-}
-
-GLenum getGLPrimitive(const Primitive_type primType){
-  switch (primType){
-    case PRIM_TRIANGLES:      return GL_TRIANGLES;
-    case PRIM_QUADS:          return GL_QUADS;
-    case PRIM_TRIANGLE_STRIP: return GL_TRIANGLE_STRIP;
-    default: return 0;
-  }
-}
-
-GLenum arrayType[] = { GL_VERTEX_ARRAY, GL_NORMAL_ARRAY, GL_TEXTURE_COORD_ARRAY, GL_COLOR_ARRAY };
 
 //==============================================================================
 //  Batch_opengl::render()
@@ -95,29 +71,29 @@ void Batch::render() {
   }
 
   if (m_vertexbuffer != 0) {
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_vertexbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vertexbuffer);
   }
 
   for (i = 0; i < num_formats; ++i) {
     Format format = m_formats[i];
-    GLenum type = getGLType(format.att_format);
-    GLenum array = arrayType[format.att_type];
+    GLenum type = format.att_format;
+    GLenum array = format.att_type;
 
     char *basePointer = (m_vertexbuffer)? NULL : get_vertices();
 
     switch (format.att_type) {
-      case ATT_VERTEX:
+      case GL_VERTEX_ARRAY:
         glVertexPointer(format.size, type, get_vertex_size(), basePointer + format.offset);
         break;
-      case ATT_NORMAL:
+      case GL_NORMAL_ARRAY:
         glNormalPointer(type, get_vertex_size(), basePointer + format.offset);
         break;
-      case ATT_TEXCOORD:
-        glClientActiveTextureARB(GL_TEXTURE0_ARB + format.index);
+      case GL_TEXTURE_COORD_ARRAY:
+        glClientActiveTexture(GL_TEXTURE0 + format.index);
         if(!format.index)
           glTexCoordPointer(format.size, type, get_vertex_size(), basePointer + format.offset);
         break;
-      case ATT_COLOR:
+      case GL_COLOR_ARRAY:
         glColorPointer(format.size, type, get_vertex_size(), basePointer + format.offset);
         break;
     }
@@ -125,22 +101,22 @@ void Batch::render() {
   }
 
   if (m_indexbuffer) {
-    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, m_indexbuffer);
-    glDrawElements(getGLPrimitive( get_primitive_type() ), get_index_count(), get_index_size() == 2? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, NULL);
-    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexbuffer);
+    glDrawElements(get_primitive_type(), get_index_count(), get_index_size() == 2? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, NULL);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   } else {
-    glDrawElements(getGLPrimitive( get_primitive_type() ), get_index_count(), get_index_size() == 2? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, get_indices());
+    glDrawElements(get_primitive_type(), get_index_count(), get_index_size() == 2? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, get_indices());
   }
 
   for (i = 0; i < num_formats; ++i) {
-    if (get_format(i).att_type == ATT_TEXCOORD) {
-      glClientActiveTextureARB(GL_TEXTURE0_ARB + get_format(i).index);
+    if (get_format(i).att_type == GL_TEXTURE_COORD_ARRAY) {
+      glClientActiveTexture(GL_TEXTURE0 + get_format(i).index);
     }
-    glDisableClientState(arrayType[get_format(i).att_type]);
+    glDisableClientState(get_format(i).att_type);
   }
 
   if (m_vertexbuffer) {
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
   }
 }
 
