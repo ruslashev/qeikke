@@ -53,7 +53,7 @@ public:
   void strafe(float speed);
   void move(float speed);
 
-  void update(int move, int strafe);
+  void update(int imove, int istrafe, float dt);
 private:
   float m_speed;
 
@@ -80,7 +80,7 @@ public:
   Plane & get_frustum_plane(int index) const { return (Plane &)m_frustum_planes[index]; }
 
   void update_view_angles(float xrel, float yrel);
-  void update(int move, int strafe);
+  void update(int imove, int istrafe, float dt);
 private:
   float pitch, yaw;
 

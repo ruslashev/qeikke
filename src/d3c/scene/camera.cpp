@@ -33,8 +33,8 @@ void Camera::update_view_angles(float xrel, float yrel) {
   m_control_fps->set_rotation(deg_to_rad(-yaw), deg_to_rad(-pitch));
 }
 
-void Camera::update(int move, int strafe) {
-  m_control_fps->update(move, strafe);
+void Camera::update(int imove, int istrafe, float dt) {
+  m_control_fps->update(imove, istrafe, dt);
 }
 
 //==============================================================================
@@ -171,8 +171,8 @@ void Camera_controller_fps::move(float speed) {
   m_view += movement;
 }
 
-void Camera_controller_fps::update(int imove, int istrafe) {
-  float m_speed = 4.f, dt = 0.0333f, speed = m_speed * dt
+void Camera_controller_fps::update(int imove, int istrafe, float dt) {
+  float m_speed = 150.f, speed = m_speed * dt
     , speeds2 = fast_inv_sqrt(2) * m_speed * dt;
   if (imove != 0 && istrafe == 0) {
     if (imove > 0)

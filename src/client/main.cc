@@ -98,6 +98,18 @@ void load() {
 }
 
 static void update(double dt, double t) {
+  Vector3f start = d3c_cam->get_position();
+  d3c_cam->update(move, strafe, dt);
+  Vector3f end = d3c_cam->get_position();
+
+  if(use_collision) {
+    Vector3f end_collided = start;
+    while(end_collided != end) {
+      end_collided = end;
+      bsp.trace( start, end, 10.0f);
+    }
+    d3c_cam->get_controller()->set_position(end_collided);
+  }
 }
 
 void render_debug_lines() {
@@ -137,19 +149,6 @@ static void draw(double alpha) {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
   glLightfv(GL_LIGHT1, GL_POSITION, light_pos2);
-
-  Vector3f start = d3c_cam->get_position();
-  d3c_cam->update(move, strafe);
-  Vector3f end = d3c_cam->get_position();
-
-  if(use_collision) {
-    Vector3f end_collided = start;
-    while(end_collided != end) {
-      end_collided = end;
-      bsp.trace( start, end, 10.0f);
-    }
-    d3c_cam->get_controller()->set_position(end_collided);
-  }
 
   renderer->set_view(d3c_cam);
 
