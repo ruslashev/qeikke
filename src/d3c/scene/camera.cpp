@@ -27,20 +27,10 @@ Camera::~Camera() {
 const float sensitivity = 3.f, m_yaw = 0.022, m_pitch = 0.022
 , pitch_max = 89.998f;
 void Camera::update_view_angles(float xrel, float yrel) {
-  yaw += xrel * sensitivity * m_yaw;
-  pitch -= yrel * sensitivity * m_pitch;
+  float yaw = xrel * sensitivity * m_yaw;
+  float pitch = yrel * sensitivity * m_pitch;
 
-  if (yaw >= 360.f)
-    yaw -= 360.f;
-  if (yaw < 0.f)
-    yaw += 360.f;
-
-  if (pitch > pitch_max)
-    pitch = pitch_max;
-  if (pitch < -pitch_max)
-    pitch = -pitch_max;
-
-  m_control_fps->set_rotation(deg_to_rad(yaw), deg_to_rad(pitch));
+  m_control_fps->set_rotation(deg_to_rad(-yaw), deg_to_rad(-pitch));
 }
 
 //==============================================================================
@@ -118,7 +108,7 @@ void Camera_controller_fps::set_rotation(float angle_z, float angle_y) {
   // we want to cap it.
 
   Vector3f axis = cross(m_view - m_position, m_up);
-  axis.normalize();;
+  axis.normalize();
 
   set_rotation(angle_y, axis);
   // Rotate around the y axis no matter what the current_rot_x is
