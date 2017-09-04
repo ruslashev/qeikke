@@ -7,7 +7,8 @@
 //==============================================================================
 //  Camera::Camera
 //==============================================================================
-Camera::Camera() : Controllable_object() {
+Camera::Camera() {
+  m_controlled = false;
   set_perspective(45.0f, 0.15f ,50000.0f);
   m_type = CAM_3D;
 

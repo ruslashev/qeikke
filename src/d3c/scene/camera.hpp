@@ -13,9 +13,9 @@
 #ifndef _CAMERA_
 #define _CAMERA_ 1
 
+#include "../math/matrix.hpp"
 #include "../math/vector.hpp"
 #include "../math/geometry.hpp"
-#include "../model/controller.hpp"
 
 enum Camera_type {
   CAM_3D		        = 0,
@@ -32,10 +32,7 @@ enum Frustum_plane {
   FRUSTUM_PLANES		= 6
 };
 
-//==============================================================================
-//  Camera_controller_fps
-//==============================================================================
-class Camera_controller_fps : public Controller {
+class Camera_controller_fps {
 public:
   Camera_controller_fps();
 
@@ -54,18 +51,33 @@ public:
   void move(float speed);
 
   void update(int imove, int istrafe, float dt);
+
+  virtual void update() {}
+
+  virtual void set_orientation(const Orientation & orientation) { m_orientation = orientation; };
+
+  const Position    & get_position()    const { return m_position;    };
+  const Orientation & get_orientation() const { return m_orientation; };
 private:
   float m_speed;
 
   Vector3f m_view;
   Vector3f m_strafe;
   Vector3f m_up;
+
+  Position    m_position;
+  Orientation m_orientation;
+};
+
+class Controllable_object {
+public:
+protected:
 };
 
 //==============================================================================
 //  Camera
 //==============================================================================
-class Camera : public Controllable_object {
+class Camera {
 public:
   Camera();
   ~Camera();
@@ -81,6 +93,20 @@ public:
 
   void update_view_angles(float xrel, float yrel);
   void update(int imove, int istrafe, float dt);
+
+  const Vector3f & get_position() const {
+    return (m_controlled ? m_controller->get_position() : m_position);
+  }
+
+  const Orientation & get_orientation() const {
+    return (m_controlled ? m_controller->get_orientation() : m_orientation);
+  }
+
+  const bool is_controlled() { return m_controlled; }
+
+  void set_controlled(bool controlled) { m_controlled = controlled; }
+  void set_controller(Camera_controller_fps* controller) { m_controller = controller; }
+  Camera_controller_fps* get_controller() { return m_controller; }
 private:
   float pitch, yaw;
 
@@ -92,6 +118,12 @@ private:
   Plane m_frustum_planes[FRUSTUM_PLANES];
 
   Camera_controller_fps* m_control_fps;
+
+  bool m_controlled;
+
+  Camera_controller_fps* m_controller;
+  Position    m_position;
+  Orientation m_orientation;
 };
 
 #endif /* _CAMERA_ */
