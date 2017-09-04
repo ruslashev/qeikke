@@ -34,12 +34,12 @@ struct Vertex_doom3 {
 //  Debug functions
 //==============================================================================
 bool portal_debug = false;
-Set<Vector2i> portal_debug_lines;
+std::vector<Vector2i> portal_debug_lines;
 int portal_debug_areas_rendered = 0;
 
 void portal_add_debug_line(Vector2i vec1, Vector2i vec2) {
-  portal_debug_lines.add(vec1);
-  portal_debug_lines.add(vec2);
+  portal_debug_lines.push_back(vec1);
+  portal_debug_lines.push_back(vec2);
 }
 
 //==============================================================================
@@ -276,7 +276,7 @@ void Scene_portal::load_proc(const std::string & name) {
       std::string name = proc_get_next_string(file);
       Portal_area* portal_area = new Portal_area(name, m_areas.size());
       portal_area->read_from_file(file);
-      m_areas.add(portal_area);
+      m_areas.push_back(portal_area);
     } else if (s == "interAreaPortals") {
       // portals
       int num_areas   = proc_get_next_int(file);
@@ -381,15 +381,15 @@ void Portal_area::read_from_file(std::ifstream &file) {
     batch->add_format( GL_TEXTURE_COORD_ARRAY, GL_FLOAT, 2, 12, 0);
     batch->add_format( GL_NORMAL_ARRAY,   GL_FLOAT, 3, 20, 0);
     batch->set_primitive_type(GL_TRIANGLES);
-    Set<Vertex_doom3> *vertices = new Set<Vertex_doom3>();
-    Set<unsigned int> *indices = new Set<unsigned int>();
+    std::vector<Vertex_doom3> *vertices = new std::vector<Vertex_doom3>();
+    std::vector<unsigned int> *indices = new std::vector<unsigned int>();
 
     // read surface...
     std::string name = proc_get_next_string(file);
     name.append(".tga");
 
     Texture* texture = renderer->get_texture_from_file(name.c_str());
-    m_textures.add( texture );
+    m_textures.push_back( texture );
 
     int num_verts = proc_get_next_int(file);
     int num_ind = proc_get_next_int(file);
@@ -410,16 +410,16 @@ void Portal_area::read_from_file(std::ifstream &file) {
       tmp_vertex.normal.y = atof( proc_get_next_value(file).c_str() );
       tmp_vertex.normal.z = atof( proc_get_next_value(file).c_str() );
 
-      vertices->get_index(j) = (tmp_vertex);
+      vertices->at(j) = (tmp_vertex);
     }
     for(int j=0; j<num_ind; j++) {
-      indices->get_index(j) = ( atoi( proc_get_next_value(file).c_str() ) );
+      indices->at(j) = ( atoi( proc_get_next_value(file).c_str() ) );
     }
     // save batch..
     log_debug << "  - surface, num_of_verts: " << vertices->size() << ", num_of_indices: " << indices->size() << endl;
-    batch->set_vertices( vertices->get_array(), vertices->size(), sizeof(Vertex_doom3));
-    batch->set_indices( indices->get_array(), indices->size(), sizeof(unsigned int));
-    m_batches.add(batch);
+    batch->set_vertices(vertices->data(), vertices->size(), sizeof(Vertex_doom3));
+    batch->set_indices(indices->data(), indices->size(), sizeof(unsigned int));
+    m_batches.push_back(batch);
   }
   log_success << m_name << " loaded succesfully " << endl;
 }

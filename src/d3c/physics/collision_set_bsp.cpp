@@ -25,7 +25,7 @@
 
 #define EPSILON 0.001f
 
-Set<Collision_brush *> debug_bsp_collision_brushes;
+std::vector<Collision_brush *> debug_bsp_collision_brushes;
 bool bsp_debug;
 
 //==============================================================================
@@ -39,7 +39,7 @@ void Kd_tree_node::trace(const Vector3f & start, Vector3f & end, float radius) {
     for(int i=0; i<num_brushes; ++i) {
       m_brushes[i]->trace(start, end, radius, end);
       if(bsp_debug) {
-        debug_bsp_collision_brushes.add(m_brushes[i]);
+        debug_bsp_collision_brushes.push_back(m_brushes[i]);
       }
     }
   }
@@ -75,12 +75,12 @@ void Kd_tree_node::insert_brush(Collision_brush* brush) {
       child_back->insert_brush( brush );
     } else {
       // plane interstect brush
-      // m_brushes.add( brush ); (insert in both children!!
+      // m_brushes.push_back( brush ); (insert in both children!!
       child_front->insert_brush( brush );
       child_back->insert_brush( brush );
     }
   } else {
-    m_brushes.add( brush );
+    m_brushes.push_back( brush );
   }
 }
 
@@ -304,7 +304,7 @@ void Collision_set_bsp::load_cm(const std::string & name) {
 
       Collision_brush *brush = new Collision_brush();
       while(  brush->read_from_file(file) ) {
-        m_brushes.add(brush);
+        m_brushes.push_back(brush);
         if(m_kd_tree) {
           m_kd_tree->insert_brush(brush);
         }

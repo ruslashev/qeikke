@@ -100,13 +100,9 @@ void Batch::render() {
     glEnableClientState(array);
   }
 
-  if (m_indexbuffer) {
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexbuffer);
-    glDrawElements(get_primitive_type(), get_index_count(), get_index_size() == 2? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, NULL);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-  } else {
-    glDrawElements(get_primitive_type(), get_index_count(), get_index_size() == 2? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, get_indices());
-  }
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexbuffer);
+  glDrawElements(get_primitive_type(), get_index_count(), get_index_size() == 2? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, NULL);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   for (i = 0; i < num_formats; ++i) {
     if (get_format(i).att_type == GL_TEXTURE_COORD_ARRAY) {

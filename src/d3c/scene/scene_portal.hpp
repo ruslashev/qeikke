@@ -13,7 +13,6 @@
 #ifndef _PORTAL_SCENE_
 #define _PORTAL_SCENE_ 1
 
-#include "../misc/set.hpp"
 #include "../model/batch.hpp"
 #include "../math/vector.hpp"
 #include "../math/matrix.hpp"
@@ -22,6 +21,7 @@
 #include "../material/texture.hpp"
 
 #include <string>
+#include <vector>
 
 class Portal_portal;
 class Scene_portal;
@@ -56,16 +56,16 @@ public:
 
   void render(Camera* camera, Vector2i min, Vector2i max);
 
-  void add_portal(Portal_portal *portal) { m_portals.add( portal ); }
+  void add_portal(Portal_portal *portal) { m_portals.push_back( portal ); }
 
   void read_from_file(std::ifstream &file);
 private:
   std::string m_name;
   int m_index;
 
-  Set<Texture *> m_textures;
-  Set<Batch *> m_batches;
-  Set<Portal_portal *> m_portals;
+  std::vector<Texture *> m_textures;
+  std::vector<Batch *> m_batches;
+  std::vector<Portal_portal *> m_portals;
 
   int m_frame_rendered;
 };
@@ -89,8 +89,8 @@ private:
   Vector2i m_transformed_min;
   Vector2i m_transformed_max;
 
-  Set<Vector3f> m_points;
-  Set<Vector2i> m_transformed_points;
+  std::vector<Vector3f> m_points;
+  std::vector<Vector2i> m_transformed_points;
   int m_area_pos;
   int m_area_neg;
 
@@ -113,9 +113,9 @@ public:
 
   int get_area_index_by_name(const std::string & name);
 private:
-  Set<Portal_area *> m_areas;
-  Set<Portal_portal *> m_portals;
-  Set<Doom3_node> m_nodes;
+  std::vector<Portal_area *> m_areas;
+  std::vector<Portal_portal *> m_portals;
+  std::vector<Doom3_node> m_nodes;
 };
 
 //==============================================================================
@@ -123,7 +123,7 @@ private:
 //==============================================================================
 extern bool portal_debug;
 extern int portal_debug_areas_rendered;
-extern Set<Vector2i> portal_debug_lines;
+extern std::vector<Vector2i> portal_debug_lines;
 
 void portal_add_debug_line(Vector2i vec1, Vector2i vec2);
 

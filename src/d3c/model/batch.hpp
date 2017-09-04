@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
-#include "../misc/set.hpp"
+#include <vector>
 
 #include <GL/glew.h>
 
@@ -75,7 +75,7 @@ public:
     format.offset = offset;
     format.index = index;
 
-    m_formats.add(format);
+    m_formats.push_back(format);
   }
 
   void render();
@@ -92,7 +92,7 @@ protected:
   unsigned int m_vertex_size;
   unsigned int m_index_size;
 
-  Set<Format> m_formats;
+  std::vector<Format> m_formats;
   unsigned int m_primitive_type;
 };
 

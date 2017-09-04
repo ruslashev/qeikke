@@ -13,11 +13,11 @@
 #ifndef _COLLISION_SET_BSP_
 #define _COLLISION_SET_BSP_ 1
 
-#include "../misc/set.hpp"
 #include "../math/vector.hpp"
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 class Plane;
 class Collision_brush;
@@ -37,7 +37,7 @@ public:
 public:
   Kd_tree_node* child_front;
   Kd_tree_node* child_back;
-  Set<Collision_brush *> m_brushes;
+  std::vector<Collision_brush *> m_brushes;
 
   int index; // -1 = no childs, 0 = yz plane, 1 = xz plane, 2 = xy plane
   float distance;
@@ -55,7 +55,7 @@ public:
 
   Vector3f m_min, m_max;	// bounding box
 private:
-  Set<Plane> m_planes;
+  std::vector<Plane> m_planes;
   std::string m_solid;
 };
 
@@ -73,8 +73,8 @@ public:
 
   void load_cm(const std::string & name);
 private:
-  Set<Vector3f> m_vertices;
-  Set<Collision_brush *> m_brushes;
+  std::vector<Vector3f> m_vertices;
+  std::vector<Collision_brush *> m_brushes;
   Kd_tree_node* m_kd_tree;
 };
 
@@ -82,6 +82,6 @@ private:
 //  Debug functions
 //==============================================================================
 extern bool bsp_debug;
-extern Set<Collision_brush *> debug_bsp_collision_brushes;
+extern std::vector<Collision_brush *> debug_bsp_collision_brushes;
 
 #endif /* _COLLISION_SET_BSP_ */
