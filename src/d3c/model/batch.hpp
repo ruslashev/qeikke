@@ -34,16 +34,7 @@ struct Format {
 class Batch {
 public:
   Batch();
-  virtual ~Batch();
 
-  void clean();
-
-  unsigned int get_index(const unsigned int index) const {
-    return (m_index_size == 2)? ((unsigned short *) m_indices)[index] : ((unsigned int *) m_indices)[index];
-  }
-
-  char *get_vertices() const { return m_vertices; }
-  char *get_indices()  const { return m_indices;  }
   const unsigned int get_vertex_count() const { return m_num_vertices;  }
   const unsigned int get_index_count()  const { return m_num_indices;   }
   const unsigned int get_vertex_size()  const { return m_vertex_size; }
@@ -53,17 +44,26 @@ public:
   const Format &get_format(unsigned int index) const { return m_formats[index]; }
 
   const unsigned int get_primitive_type() const { return m_primitive_type; }
-  void set_primitive_type(const unsigned int prim_type) { m_primitive_type = prim_type; }
+  void set_primitive_type(const unsigned int prim_type) { m_primitive_type
+    = prim_type; }
 
-  void set_vertices(void *vertex_array, const unsigned int vertex_count, const unsigned int size) {
-    m_vertices = (char *) vertex_array;
+  void set_vertices(void *vertex_array, const unsigned int vertex_count
+      , const unsigned int size) {
     m_num_vertices = vertex_count;
     m_vertex_size = size;
+    glGenBuffers(1, &m_vertexbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vertexbuffer);
+    glBufferData(GL_ARRAY_BUFFER, m_num_vertices * m_vertex_size, vertex_array
+        , GL_STATIC_DRAW);
   }
-  void set_indices(void *index_array, const unsigned int index_count, const unsigned int size) {
-    m_indices = (char *) index_array;
+  void set_indices(void *index_array, const unsigned int index_count
+      , const unsigned int size) {
     m_num_indices = index_count;
     m_index_size = size;
+    glGenBuffers(1, &m_indexbuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexbuffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_num_indices * m_index_size
+        , index_array, GL_STATIC_DRAW);
   }
 
   void add_format(const unsigned int att_type, const unsigned int att_format, const unsigned int size, const unsigned int offset, const unsigned int index = 0) {
@@ -79,13 +79,9 @@ public:
   }
 
   void render();
-  void upload_vertexbuffer();
 protected:
   unsigned int m_vertexbuffer;
   unsigned int m_indexbuffer;
-
-  char *m_vertices;
-  char *m_indices;
 
   unsigned int m_num_vertices;
   unsigned int m_num_indices;

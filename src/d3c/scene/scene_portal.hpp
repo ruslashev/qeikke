@@ -20,6 +20,8 @@
 #include "../renderer.hpp"
 #include "../material/texture.hpp"
 
+#include "../../engine/ogl.hh"
+
 #include <string>
 #include <vector>
 
@@ -103,7 +105,7 @@ private:
 //==============================================================================
 class Scene_portal {
 public:
-  Scene_portal() {}
+  Scene_portal();
 
   void render(Camera* camera);
   void load_proc(const std::string & name);
@@ -116,6 +118,8 @@ private:
   std::vector<Portal_area *> m_areas;
   std::vector<Portal_portal *> m_portals;
   std::vector<Doom3_node> m_nodes;
+
+  // shader_program _sp;
 };
 
 //==============================================================================

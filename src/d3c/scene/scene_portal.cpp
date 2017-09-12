@@ -256,6 +256,11 @@ inline std::string proc_get_next_string(std::ifstream & file) {
 #define proc_get_next_float(x) atof( proc_get_next_value(x).c_str() )
 #define proc_get_next_int(x) atoi( proc_get_next_value(x).c_str() )
 
+Scene_portal::Scene_portal()
+  // : _sp()
+{
+}
+
 //==============================================================================
 //  Scene_portal::load_proc()
 //==============================================================================
@@ -377,12 +382,8 @@ void Portal_area::read_from_file(std::ifstream &file) {
   for(int i=0; i<num_surfaces; i++) {
     // create new batch...
     Batch* batch = renderer->create_batch();
-    batch->add_format( GL_VERTEX_ARRAY,   GL_FLOAT, 3,  0, 0);
-    batch->add_format( GL_TEXTURE_COORD_ARRAY, GL_FLOAT, 2, 12, 0);
-    batch->add_format( GL_NORMAL_ARRAY,   GL_FLOAT, 3, 20, 0);
-    batch->set_primitive_type(GL_TRIANGLES);
-    std::vector<Vertex_doom3> *vertices = new std::vector<Vertex_doom3>();
-    std::vector<unsigned int> *indices = new std::vector<unsigned int>();
+    std::vector<Vertex_doom3> vertices;
+    std::vector<unsigned int> indices;
 
     // read surface...
     std::string name = proc_get_next_string(file);
@@ -394,31 +395,26 @@ void Portal_area::read_from_file(std::ifstream &file) {
     int num_verts = proc_get_next_int(file);
     int num_ind = proc_get_next_int(file);
 
-    vertices->resize( num_verts );
-    indices->resize( num_ind );
+    vertices.resize( num_verts );
+    indices.resize( num_ind );
 
-    for(int j=0; j<num_verts; j++) {
-      Vertex_doom3 tmp_vertex;
-      tmp_vertex.vertex.x = atof( proc_get_next_value(file).c_str() );
-      tmp_vertex.vertex.y = atof( proc_get_next_value(file).c_str() );
-      tmp_vertex.vertex.z = atof( proc_get_next_value(file).c_str() );
-
-      tmp_vertex.texcoord.x = atof( proc_get_next_value(file).c_str() );
-      tmp_vertex.texcoord.y = atof( proc_get_next_value(file).c_str() );
-
-      tmp_vertex.normal.x = atof( proc_get_next_value(file).c_str() );
-      tmp_vertex.normal.y = atof( proc_get_next_value(file).c_str() );
-      tmp_vertex.normal.z = atof( proc_get_next_value(file).c_str() );
-
-      vertices->at(j) = (tmp_vertex);
+    for (int j=0; j<num_verts; j++) {
+      vertices[j].vertex.x = atof(proc_get_next_value(file).c_str());
+      vertices[j].vertex.y = atof(proc_get_next_value(file).c_str());
+      vertices[j].vertex.z = atof(proc_get_next_value(file).c_str());
+      vertices[j].texcoord.x = atof(proc_get_next_value(file).c_str());
+      vertices[j].texcoord.y = atof(proc_get_next_value(file).c_str());
+      vertices[j].normal.x = atof(proc_get_next_value(file).c_str());
+      vertices[j].normal.y = atof(proc_get_next_value(file).c_str());
+      vertices[j].normal.z = atof(proc_get_next_value(file).c_str());
     }
-    for(int j=0; j<num_ind; j++) {
-      indices->at(j) = ( atoi( proc_get_next_value(file).c_str() ) );
-    }
+    for (int j = 0; j < num_ind; j++)
+      indices[j] = atoi(proc_get_next_value(file).c_str());
     // save batch..
-    log_debug << "  - surface, num_of_verts: " << vertices->size() << ", num_of_indices: " << indices->size() << endl;
-    batch->set_vertices(vertices->data(), vertices->size(), sizeof(Vertex_doom3));
-    batch->set_indices(indices->data(), indices->size(), sizeof(unsigned int));
+    log_debug << "surface, num_of_verts: " << vertices.size()
+      << ", num_of_indices: " << indices.size() << endl;
+    batch->set_vertices(vertices.data(), vertices.size(), sizeof(Vertex_doom3));
+    batch->set_indices(indices.data(), indices.size(), sizeof(unsigned int));
     m_batches.push_back(batch);
   }
   log_success << m_name << " loaded succesfully " << endl;
