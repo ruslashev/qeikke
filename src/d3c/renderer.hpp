@@ -68,7 +68,6 @@ public:
   // Renderer_opengl
   // init
   void init();
-  void close();
 
   // viewport
   void set_viewport(const int left, const int top, const int width, const int height);

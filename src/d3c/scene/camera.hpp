@@ -18,8 +18,8 @@
 #include "../math/geometry.hpp"
 
 enum Camera_type {
-  CAM_3D		        = 0,
-  CAM_2D	            = 1
+  CAM_3D = 0,
+  CAM_2D = 1
 };
 
 enum Frustum_plane {
@@ -69,14 +69,6 @@ private:
   Orientation m_orientation;
 };
 
-class Controllable_object {
-public:
-protected:
-};
-
-//==============================================================================
-//  Camera
-//==============================================================================
 class Camera {
 public:
   Camera();

@@ -173,12 +173,10 @@ static void draw(double alpha) {
 
   glEnable(GL_DEPTH_TEST);
 
-  glFlush();
   renderer->next_frame();
 }
 
 static void cleanup() {
-  renderer->close();
 }
 
 int main() {

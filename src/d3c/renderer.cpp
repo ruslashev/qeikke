@@ -69,12 +69,6 @@ void Renderer::init() {
 }
 
 //==============================================================================
-//  Renderer::close()
-//==============================================================================
-void Renderer::close() {
-}
-
-//==============================================================================
 //  Renderer::set_viewport()
 //==============================================================================
 void Renderer::set_viewport(const int left, const int top, const int width, const int height) {
@@ -132,18 +126,16 @@ void Renderer::set_view(Camera* camera) {
   glGetIntegerv(GL_VIEWPORT, m_viewport);
 
   // update frustum of camera
-  camera->update_frustum();
+  // camera->update_frustum();
 }
 
 //==============================================================================
 //  Renderer::upload_textures()
 //==============================================================================
 void Renderer::upload_textures() {
-  std::map<std::string, Texture*>::const_iterator it;
-
-  for ( it = m_texture_map.begin(); it != m_texture_map.end(); ++it ) {
+  for (std::map<std::string, Texture*>::const_iterator it = m_texture_map.begin()
+      ; it != m_texture_map.end(); ++it)
     it->second->upload_texture();
-  }
 }
 
 //==============================================================================
