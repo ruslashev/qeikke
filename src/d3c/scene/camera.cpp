@@ -61,36 +61,44 @@ void Camera::get_perspective(float &fov_y, float &near_plane, float &far_plane) 
 //  Camera::update_frustum()
 //==============================================================================
 void Camera::update_frustum() {
+#if 0
   Matrix4x4f clip = renderer->get_projection_matrix() * renderer->get_modelview_matrix();
 
   // This will extract the RIGHT side of the frustum
   m_frustum_planes[FRUSTUM_RIGHT ] = Plane(
-      Vector3f( clip[ 3] - clip[ 0], clip[ 7] - clip[ 4], clip[11] - clip[ 8]), clip[15] - clip[12]);
+      Vector3f( clip[ 3] - clip[ 0], clip[ 7] - clip[ 4], clip[11] - clip[ 8])
+      , clip[15] - clip[12]);
 
   // This will extract the LEFT side of the frustum
   m_frustum_planes[FRUSTUM_LEFT  ] = Plane(
-      Vector3f( clip[ 3] + clip[ 0], clip[ 7] + clip[ 4], clip[11] + clip[ 8]), clip[15] + clip[12]);
+      Vector3f( clip[ 3] + clip[ 0], clip[ 7] + clip[ 4], clip[11] + clip[ 8])
+      , clip[15] + clip[12]);
 
   // This will extract the BOTTOM side of the frustum
   m_frustum_planes[FRUSTUM_BOTTOM] = Plane(
-      Vector3f( clip[ 3] + clip[ 1], clip[ 7] + clip[ 5], clip[11] + clip[ 9]), clip[15] + clip[13]);
+      Vector3f( clip[ 3] + clip[ 1], clip[ 7] + clip[ 5], clip[11] + clip[ 9])
+      , clip[15] + clip[13]);
 
   // This will extract the TOP side of the frustum
   m_frustum_planes[FRUSTUM_TOP   ] = Plane(
-      Vector3f( clip[ 3] - clip[ 1], clip[ 7] - clip[ 5], clip[11] - clip[ 9]), clip[15] - clip[13]);
+      Vector3f( clip[ 3] - clip[ 1], clip[ 7] - clip[ 5], clip[11] - clip[ 9])
+      , clip[15] - clip[13]);
 
   // This will extract the BACK side of the frustum
   m_frustum_planes[FRUSTUM_BACK  ] = Plane(
-      Vector3f( clip[ 3] - clip[ 2], clip[ 7] - clip[ 6], clip[11] - clip[10]), clip[15] - clip[14]);
+      Vector3f( clip[ 3] - clip[ 2], clip[ 7] - clip[ 6], clip[11] - clip[10])
+      , clip[15] - clip[14]);
 
   // This will extract the FRONT side of the frustum
   m_frustum_planes[FRUSTUM_FRONT ] = Plane(
-      Vector3f( clip[ 3] + clip[ 2], clip[ 7] + clip[ 6], clip[11] + clip[10]), clip[15] + clip[14]);
+      Vector3f( clip[ 3] + clip[ 2], clip[ 7] + clip[ 6], clip[11] + clip[10])
+      , clip[15] + clip[14]);
 
   // And normalize..
   for(int i=0; i<FRUSTUM_PLANES; ++i) {
     m_frustum_planes[i].normalize();
   }
+#endif
 }
 
 //==============================================================================
