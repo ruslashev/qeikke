@@ -5,19 +5,23 @@ namespace shaders {
 static const char *map_vert = _glsl(
   attribute vec3 vertex_pos;
   attribute vec2 texture_coord;
+  attribute vec3 vertex_normal;
   uniform mat4 mvp;
   varying vec2 texture_coord_f;
+  varying vec3 vertex_normal_f;
   void main() {
     gl_Position = mvp * vec4(vertex_pos, 1.0);
-    texture_coord_f texture_coord;
+    texture_coord_f = texture_coord;
+    vertex_normal_f = vertex_normal;
   }
 );
 
 static const char *map_frag = _glsl(
   varying vec2 texture_coord_f;
+  varying vec3 vertex_normal_f;
   uniform sampler2D texture_sampler;
   void main() {
-    gl_FragColor = texture2D(lightmap_sampler, lightmap_coord_f);
+    gl_FragColor = vec4(vertex_normal_f, 1.0);
   }
 );
 
