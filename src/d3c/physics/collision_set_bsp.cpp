@@ -1,15 +1,3 @@
-//============================================================================//
-// This source file is part of work done by Reinder Nijhoff (reinder@infi.nl) //
-// For the latest info, see http://developer.infi.nl                          //
-//                                                                            //
-// You're free to use the code in any way you like, modified, unmodified or   //
-// cut'n'pasted into your own work.                                           //
-//                                                                            //
-// Part of this source is based on work by:                                   //
-//    - Humus (http://esprit.campus.luth.se/~humus/)                          //
-//    - Paul Baker (http://www.paulsprojects.net)                             //
-//============================================================================//
-
 #include "collision_set_bsp.hpp"
 #include "../misc/log.hpp"
 #include "../math/geometry.hpp"
@@ -27,9 +15,6 @@
 std::vector<Collision_brush *> debug_bsp_collision_brushes;
 bool bsp_debug;
 
-//==============================================================================
-//  Kd_tree_node::trace()
-//==============================================================================
 void Kd_tree_node::trace(const glm::vec3 & start, glm::vec3 & end, float radius) {
   // walk through the k-D tree to find brushes..
   int num_brushes = m_brushes.size();
@@ -62,9 +47,6 @@ void Kd_tree_node::trace(const glm::vec3 & start, glm::vec3 & end, float radius)
   }
 }
 
-//==============================================================================
-//  Kd_tree_node::insert_brush()
-//==============================================================================
 void Kd_tree_node::insert_brush(Collision_brush* brush) {
   if(index >=0 ) { // have childs, find the right child for the brush
     // very fast plane check...
@@ -83,18 +65,12 @@ void Kd_tree_node::insert_brush(Collision_brush* brush) {
   }
 }
 
-//==============================================================================
-//  Collision_set_bsp::trace()
-//==============================================================================
 void Collision_set_bsp::trace(const glm::vec3 & start, glm::vec3 & end, float radius) {
   if(m_kd_tree) {
     m_kd_tree->trace( start, end, radius );
   }
 }
 
-//==============================================================================
-//  Collision_brush::trace()
-//==============================================================================
 void Collision_brush::trace(const glm::vec3 & start, const glm::vec3 & end, float radius, glm::vec3 & output) {
   float min_fraction = -99999.0f;
   int min_plane = -1;
@@ -132,9 +108,6 @@ void Collision_brush::trace(const glm::vec3 & start, const glm::vec3 & end, floa
   }
 }
 
-//==============================================================================
-//  Debug functions
-//==============================================================================
 void render_cube(glm::vec3 min, glm::vec3 max) {
   glVertex3f( min.x, max.y, min.z );
   glVertex3f( min.x, min.y, min.z );
@@ -177,11 +150,6 @@ void render_cube(glm::vec3 min, glm::vec3 max) {
   glVertex3f( min.x, min.y, min.z );
 }
 
-//============================================================================//
-//                                                                            //
-//	Read from file functions (format: .cm, doom3)  						  //
-//                                                                            //
-//============================================================================//
 inline std::string cm_get_next_value(std::ifstream & file) {
   std::string s;
   while( file >> s) {
@@ -207,9 +175,6 @@ inline std::string cm_get_next_string(std::ifstream & file) {
 #define cm_get_next_float(x) atof( cm_get_next_value(x).c_str() )
 #define cm_get_next_int(x) atoi( cm_get_next_value(x).c_str() )
 
-//==============================================================================
-//  Collision_set_bsp::load_cm()
-//==============================================================================
 void Collision_set_bsp::load_cm(const std::string & name) {
   log_function << "Load " << name << " in Collision_set_bsp::load_cm()" << endl;
 
@@ -265,9 +230,6 @@ void Collision_set_bsp::load_cm(const std::string & name) {
   log_success << name << " loaded succesfully " << endl;
 }
 
-//==============================================================================
-//  Collision_brush::read_from_file()
-//==============================================================================
 bool Collision_brush::read_from_file(std::ifstream &file) {
   std::string tmp = cm_get_next_value(file);
   if(tmp == "EOF" || tmp == "collisionModel") {
@@ -301,9 +263,6 @@ bool Collision_brush::read_from_file(std::ifstream &file) {
   return true;
 }
 
-//==============================================================================
-//  Kd_tree_node::read_from_file()
-//==============================================================================
 void Kd_tree_node::read_from_file(std::ifstream &file) {
   index    = cm_get_next_int(file);
   distance = cm_get_next_float(file);
@@ -316,3 +275,4 @@ void Kd_tree_node::read_from_file(std::ifstream &file) {
     child_back->read_from_file(file);
   }
 }
+

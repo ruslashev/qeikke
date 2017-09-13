@@ -1,15 +1,3 @@
-//============================================================================//
-// This source file is part of work done by Reinder Nijhoff (reinder@infi.nl) //
-// For the latest info, see http://developer.infi.nl                          //
-//                                                                            //
-// You're free to use the code in any way you like, modified, unmodified or   //
-// cut'n'pasted into your own work.                                           //
-//                                                                            //
-// Part of this source is based on work by:                                   //
-//    - Humus (http://esprit.campus.luth.se/~humus/)                          //
-//    - Paul Baker (http://www.paulsprojects.net)                             //
-//============================================================================//
-
 #include "image.hpp"
 #include "../misc/log.hpp"
 
@@ -18,9 +6,6 @@
 
 static int TGAReadError = 0;
 
-//==============================================================================
-//  read_data()
-//==============================================================================
 void read_data(std::ifstream &file, char* data, unsigned int size) {
   if (!file.is_open()) {
     return;
@@ -33,9 +18,6 @@ void read_data(std::ifstream &file, char* data, unsigned int size) {
   }
 }
 
-//==============================================================================
-//  Image::Image()
-//==============================================================================
 Image::Image() {
   m_loaded = false;
   m_width = 0;
@@ -46,9 +28,6 @@ Image::Image() {
   m_pixels = 0;
 }
 
-//==============================================================================
-//  Image::Image()
-//==============================================================================
 Image::Image(const std::string &filename) {
   m_loaded = false;
   m_width = 0;
@@ -60,16 +39,10 @@ Image::Image(const std::string &filename) {
   load_form_file(filename);
 }
 
-//==============================================================================
-//  Image::~Image()
-//==============================================================================
 Image::~Image() {
   clear();
 }
 
-//==============================================================================
-//  Image::load_from_file()
-//==============================================================================
 bool Image::load_form_file(const std::string &filename) {
   log_init_multiple << "Load " << filename << " in Image::load_from_file()" << endl;
 
@@ -209,9 +182,6 @@ bool Image::load_form_file(const std::string &filename) {
   return true;
 }
 
-//==============================================================================
-//  Image::clear()
-//==============================================================================
 void Image::clear() {
   if (m_pixels) {
     free(m_pixels);
@@ -226,51 +196,30 @@ void Image::clear() {
   m_type = UNDEFINED;
 }
 
-//==============================================================================
-//  Image::get_alpha_depth()
-//==============================================================================
 unsigned int Image::get_alpha_depth() {
   return m_alpha_depth;
 }
 
-//==============================================================================
-//  Image::get_image_width()
-//==============================================================================
 unsigned int Image::get_image_width() {
   return m_width;
 }
 
-//==============================================================================
-//  Image::get_image_height()
-//==============================================================================
 unsigned int Image::get_image_height() {
   return m_height;
 }
 
-//==============================================================================
-//  Image::get_pixel_depth()
-//==============================================================================
 unsigned int Image::get_pixel_depth() {
   return m_pixel_depth;
 }
 
-//==============================================================================
-//  Image::get_pixels()
-//==============================================================================
 unsigned char* Image::get_pixels() {
   return m_pixels;
 }
 
-//==============================================================================
-//  Image::get_image_type()
-//==============================================================================
 Image::Image_type Image::get_image_type() {
   return m_type;
 }
 
-//==============================================================================
-//  Image::create_empty()
-//==============================================================================
 void Image::create_empty() {
   clear();
 
@@ -293,3 +242,4 @@ void Image::create_empty() {
   }
   m_loaded = true;
 }
+

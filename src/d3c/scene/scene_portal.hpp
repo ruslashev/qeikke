@@ -1,17 +1,4 @@
-//============================================================================//
-// This source file is part of work done by Reinder Nijhoff (reinder@infi.nl) //
-// For the latest info, see http://developer.infi.nl                          //
-//                                                                            //
-// You're free to use the code in any way you like, modified, unmodified or   //
-// cut'n'pasted into your own work.                                           //
-//                                                                            //
-// Part of this source is based on work by:                                   //
-//    - Humus (http://esprit.campus.luth.se/~humus/)                          //
-//    - Paul Baker (http://www.paulsprojects.net)                             //
-//============================================================================//
-
-#ifndef _PORTAL_SCENE_
-#define _PORTAL_SCENE_ 1
+#pragma once
 
 #include "../model/batch.hpp"
 #include "../math/geometry.hpp"
@@ -27,17 +14,11 @@ class Portal_portal;
 class Scene_portal;
 class Camera;
 
-//==============================================================================
-//  Doom3_node
-//==============================================================================
 struct Doom3_node {
   Plane plane;
   int pos_child, neg_child;
 };
 
-//==============================================================================
-//  Vector2i
-//==============================================================================
 class Vector2i {
 public:
   Vector2i() {}
@@ -46,9 +27,6 @@ public:
   int x, y;
 };
 
-//==============================================================================
-//  Portal_area
-//==============================================================================
 class Portal_area {
 public:
   Portal_area(const std::string & name, int index) : m_name(name), m_index(index) {}
@@ -70,9 +48,6 @@ private:
   int m_frame_rendered;
 };
 
-//==============================================================================
-//  Portal_portal
-//==============================================================================
 class Portal_portal {
 public:
   Portal_portal(Scene_portal* scene) : m_frame_rendered(0) { m_scene = scene; }
@@ -98,9 +73,6 @@ private:
   int m_visible;
 };
 
-//==============================================================================
-//  Scene_portal
-//==============================================================================
 class Scene_portal {
 public:
   Scene_portal();
@@ -120,14 +92,9 @@ private:
   // shader_program _sp;
 };
 
-//==============================================================================
-//  Debug functions
-//==============================================================================
 extern bool portal_debug;
 extern int portal_debug_areas_rendered;
 extern std::vector<Vector2i> portal_debug_lines;
 
 void portal_add_debug_line(Vector2i vec1, Vector2i vec2);
-
-#endif /* _PORTAL_SCENE_ */
 

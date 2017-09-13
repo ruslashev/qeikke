@@ -1,15 +1,3 @@
-//============================================================================//
-// This source file is part of work done by Reinder Nijhoff (reinder@infi.nl) //
-// For the latest info, see http://developer.infi.nl                          //
-//                                                                            //
-// You're free to use the code in any way you like, modified, unmodified or   //
-// cut'n'pasted into your own work.                                           //
-//                                                                            //
-// Part of this source is based on work by:                                   //
-//    - Humus (http://esprit.campus.luth.se/~humus/)                          //
-//    - Paul Baker (http://www.paulsprojects.net)                             //
-//============================================================================//
-
 #include "scene_portal.hpp"
 #include "../misc/log.hpp"
 #include "camera.hpp"
@@ -19,9 +7,6 @@
 #include <sstream>
 #include <iostream>
 
-//==============================================================================
-//  Vertex_doom3
-//==============================================================================
 struct Vertex_doom3 {
   glm::vec3 vertex;
   glm::vec2 texcoord;
@@ -29,9 +14,6 @@ struct Vertex_doom3 {
 };
 
 
-//==============================================================================
-//  Debug functions
-//==============================================================================
 bool portal_debug = false;
 std::vector<Vector2i> portal_debug_lines;
 int portal_debug_areas_rendered = 0;
@@ -41,9 +23,6 @@ void portal_add_debug_line(Vector2i vec1, Vector2i vec2) {
   portal_debug_lines.push_back(vec2);
 }
 
-//==============================================================================
-//  Scene_portal::render()
-//==============================================================================
 void Scene_portal::render(Camera* camera) {
   //  find start area..
   int start_area = get_area( camera->get_position() );
@@ -65,9 +44,6 @@ void Scene_portal::render(Camera* camera) {
   renderer->set_renderport(0,0, g_screen->get_window_width(), g_screen->get_window_height());
 }
 
-//==============================================================================
-//  Portal_area::render()
-//==============================================================================
 void Portal_area::render(Camera* camera, Vector2i min, Vector2i max) {
   //  hack!!?! only render area once each frame
   if(m_frame_rendered == renderer->get_frame()) {
@@ -94,9 +70,6 @@ void Portal_area::render(Camera* camera, Vector2i min, Vector2i max) {
   }
 }
 
-//==============================================================================
-//  Portal_portal::render_from_area()
-//==============================================================================
 void Portal_portal::render_from_area(Camera* camera, int index, Vector2i min, Vector2i max) {
   // check if vertices are projected for visibility check
   if(m_frame_rendered != renderer->get_frame()) {
@@ -145,16 +118,12 @@ void Portal_portal::render_from_area(Camera* camera, int index, Vector2i min, Ve
 }
 
 //==============================================================================
-//  Portal_portal::check_visibility()
-//	0 = invisible (outside frustrum), 1 = visible, -1 = intersects frontplane
+// 0 = invisible (outside frustrum), 1 = visible, -1 = intersects frontplane
 //==============================================================================
 int Portal_portal::check_visibility(Camera* camera) {
   return 1;
 }
 
-//==============================================================================
-//  Portal_portal::transform_points()
-//==============================================================================
 void Portal_portal::transform_points() {
   int num_points = m_points.size();
 
@@ -181,9 +150,6 @@ void Portal_portal::transform_points() {
   }
 }
 
-//==============================================================================
-//  Scene_portal::get_area()
-//==============================================================================
 int Scene_portal::get_area(const glm::vec3 & position) {
   if(!m_nodes.size()) {
     return 0;
@@ -209,9 +175,6 @@ int Scene_portal::get_area(const glm::vec3 & position) {
   }
 }
 
-//==============================================================================
-//  Scene_portal::get_area_index_by_name()
-//==============================================================================
 int Scene_portal::get_area_index_by_name(const std::string & name) {
   int num_areas = m_areas.size();
 
@@ -222,12 +185,6 @@ int Scene_portal::get_area_index_by_name(const std::string & name) {
   }
   return -1;
 }
-
-//============================================================================//
-//                                                                            //
-//	Read from file functions (format: .proc, doom3)  						  //
-//                                                                            //
-//============================================================================//
 
 inline std::string proc_get_next_value(std::ifstream & file) {
   std::string s;
@@ -260,9 +217,6 @@ Scene_portal::Scene_portal()
 {
 }
 
-//==============================================================================
-//  Scene_portal::load_proc()
-//==============================================================================
 void Scene_portal::load_proc(const std::string & name) {
   log_function << "Load " << name << " in Scene_portal::load_proc()" << endl;
 
@@ -334,9 +288,6 @@ void Scene_portal::load_proc(const std::string & name) {
   log_success << name << " loaded succesfully " << endl;
 }
 
-//==============================================================================
-//  Portal_portal::read_from_file()
-//==============================================================================
 void Portal_portal::read_from_file(std::ifstream &file) {
   int num_points = proc_get_next_int( file );
   int pos_area   = proc_get_next_int( file );
@@ -369,9 +320,6 @@ void Portal_portal::read_from_file(std::ifstream &file) {
   }
 }
 
-//==============================================================================
-//  Portal_area::read_from_file()
-//==============================================================================
 void Portal_area::read_from_file(std::ifstream &file) {
   log_function << "Load area (model) " << m_name << " in Portal_area::read_from_file()" << endl;
   // read num surfaces;

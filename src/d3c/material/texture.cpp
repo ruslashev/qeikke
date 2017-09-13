@@ -1,24 +1,9 @@
-//============================================================================//
-// This source file is part of work done by Reinder Nijhoff (reinder@infi.nl) //
-// For the latest info, see http://developer.infi.nl                          //
-//                                                                            //
-// You're free to use the code in any way you like, modified, unmodified or   //
-// cut'n'pasted into your own work.                                           //
-//                                                                            //
-// Part of this source is based on work by:                                   //
-//    - Humus (http://esprit.campus.luth.se/~humus/)                          //
-//    - Paul Baker (http://www.paulsprojects.net)                             //
-//============================================================================//
-
 #include "texture.hpp"
 #include "image.hpp"
 #include "../misc/log.hpp"
 
 #include <GL/glew.h>
 
-//==============================================================================
-//  Texture::Texture()
-//==============================================================================
 Texture::Texture(const std::string& name) {
   log_init_multiple << "Initialize Texture: " << name << endl;
   m_name = name;
@@ -31,24 +16,15 @@ Texture::Texture(const std::string& name) {
   m_use_clamp = false;
 }
 
-//==============================================================================
-//  Texture::~Texture()
-//==============================================================================
 Texture::~Texture() {
   clear();
 }
 
-//==============================================================================
-//  Texture::set_image()
-//==============================================================================
 void Texture::set_image(Image* image) {
   clear();
   m_images.push_back(image);
 }
 
-//==============================================================================
-//  Texture::set_image()
-//==============================================================================
 void Texture::set_image(int index, Image* image) {
   if(index >= m_images.size()) {
     log_warning << "Illegal argument to Texture::set_image(): " << index << endl;
@@ -58,9 +34,6 @@ void Texture::set_image(int index, Image* image) {
   m_images[index] = image;
 }
 
-//==============================================================================
-//  Texture::set_num_images()
-//==============================================================================
 void Texture::set_num_images(int count) {
   clear();
   m_images.resize(count);
@@ -70,9 +43,6 @@ void Texture::set_num_images(int count) {
   }
 }
 
-//==============================================================================
-//  clear()
-//==============================================================================
 void Texture::clear() {
   if(m_images.size()) {
     log_init_multiple << "Free all images of texture " << m_name << endl;

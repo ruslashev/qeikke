@@ -1,17 +1,4 @@
-//============================================================================//
-// This source file is part of work done by Reinder Nijhoff (reinder@infi.nl) //
-// For the latest info, see http://developer.infi.nl                          //
-//                                                                            //
-// You're free to use the code in any way you like, modified, unmodified or   //
-// cut'n'pasted into your own work.                                           //
-//                                                                            //
-// Part of this source is based on work by:                                   //
-//    - Humus (http://esprit.campus.luth.se/~humus/)                          //
-//    - Paul Baker (http://www.paulsprojects.net)                             //
-//============================================================================//
-
-#ifndef _COLLISION_SET_BSP_
-#define _COLLISION_SET_BSP_ 1
+#pragma once
 
 #include <string>
 #include <iostream>
@@ -23,9 +10,6 @@
 class Plane;
 class Collision_brush;
 
-//==============================================================================
-//  Kd_tree_node
-//==============================================================================
 class Kd_tree_node {
 public:
   Kd_tree_node() {}
@@ -43,9 +27,6 @@ public:
   float distance;
 };
 
-//==============================================================================
-//  Collision_brush
-//==============================================================================
 class Collision_brush {
 public:
   Collision_brush() {}
@@ -59,9 +40,6 @@ private:
   std::string m_solid;
 };
 
-//==============================================================================
-//  Collision_set_bsp
-//==============================================================================
 class Collision_set_bsp {
 public:
   Collision_set_bsp() : m_kd_tree(NULL) {}
@@ -78,11 +56,6 @@ private:
   Kd_tree_node* m_kd_tree;
 };
 
-//==============================================================================
-//  Debug functions
-//==============================================================================
 extern bool bsp_debug;
 extern std::vector<Collision_brush *> debug_bsp_collision_brushes;
-
-#endif /* _COLLISION_SET_BSP_ */
 

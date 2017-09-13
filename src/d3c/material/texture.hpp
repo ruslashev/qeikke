@@ -1,26 +1,10 @@
-//============================================================================//
-// This source file is part of work done by Reinder Nijhoff (reinder@infi.nl) //
-// For the latest info, see http://developer.infi.nl                          //
-//                                                                            //
-// You're free to use the code in any way you like, modified, unmodified or   //
-// cut'n'pasted into your own work.                                           //
-//                                                                            //
-// Part of this source is based on work by:                                   //
-//    - Humus (http://esprit.campus.luth.se/~humus/)                          //
-//    - Paul Baker (http://www.paulsprojects.net)                             //
-//============================================================================//
-
-#ifndef  _TEXTURE_
-#define  _TEXTURE_ 1
+#pragma once
 
 #include <vector>
 #include <string>
 
 class Image;
 
-//==============================================================================
-//  Texture
-//==============================================================================
 class Texture {
 public:
   Texture(const std::string& name);
@@ -53,6 +37,4 @@ protected:
 
   unsigned int m_tex_id;
 };
-
-#endif /* TEXTURE */
 

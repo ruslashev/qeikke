@@ -5,9 +5,6 @@
 #include "../../engine/screen.hh"
 #include "../math.hpp"
 
-//==============================================================================
-//  Camera::Camera
-//==============================================================================
 Camera::Camera() {
   m_controlled = false;
   set_perspective(45.0f, 0.15f ,50000.0f);
@@ -39,18 +36,12 @@ void Camera::update(int imove, int istrafe, float dt) {
   m_control_fps->update(imove, istrafe, dt);
 }
 
-//==============================================================================
-//  Camera::set_perspective()
-//==============================================================================
 void Camera::set_perspective(float fov_y, float near_plane, float far_plane) {
   m_fov_y = fov_y;
   m_near_plane = near_plane;
   m_far_plane = far_plane;
 }
 
-//==============================================================================
-//  Camera::get_perspective()
-//==============================================================================
 void Camera::get_perspective(float &fov_y, float &near_plane, float &far_plane) {
   fov_y = m_fov_y;
   near_plane = m_near_plane;
@@ -58,9 +49,6 @@ void Camera::get_perspective(float &fov_y, float &near_plane, float &far_plane) 
 }
 
 
-//==============================================================================
-//  Camera::update_frustum()
-//==============================================================================
 void Camera::update_frustum() {
 #if 0
   Matrix4x4f clip = renderer->get_projection_matrix() * renderer->get_modelview_matrix();
@@ -102,10 +90,6 @@ void Camera::update_frustum() {
 #endif
 }
 
-//==============================================================================
-//  Camera_controller_fps::Camera_controller_fps()
-// remember, z is up
-//==============================================================================
 Camera_controller_fps::Camera_controller_fps() {
   look_at( glm::vec3(0.0, 0.0, 0.0),
       glm::vec3(0.0, 1.0, 0.5),
@@ -114,9 +98,6 @@ Camera_controller_fps::Camera_controller_fps() {
   m_speed = 150.0f;
 }
 
-//==============================================================================
-//  Camera_controller_fps::set_rotation()
-//==============================================================================
 void Camera_controller_fps::set_rotation(float angle_z, float angle_y) {
   // Todo: if the current rotation (in radians) is greater than 1.0,
   // we want to cap it.
@@ -129,9 +110,6 @@ void Camera_controller_fps::set_rotation(float angle_z, float angle_y) {
   set_rotation(angle_z, glm::vec3(0, 0, 1) );
 }
 
-//==============================================================================
-//  Camera_controller_fps::set_rotation()
-//==============================================================================
 void Camera_controller_fps::set_rotation(float angle, glm::vec3 axis) {
   glm::vec3 new_view;
   // Get the view vector (The direction we are facing)
@@ -153,9 +131,6 @@ void Camera_controller_fps::set_rotation(float angle, glm::vec3 axis) {
   look_at( m_position, m_view, m_up);
 }
 
-//==============================================================================
-//  Camera_controller_fps::strafe()
-//==============================================================================
 void Camera_controller_fps::strafe(float speed) {
   // Add the strafe vector to our position
   m_position.x += m_strafe.x * speed;
@@ -166,9 +141,6 @@ void Camera_controller_fps::strafe(float speed) {
   m_view.y += m_strafe.y * speed;
 }
 
-//==============================================================================
-//  Camera_controller_fps::move()
-//==============================================================================
 void Camera_controller_fps::move(float speed) {
   // Get the current view vector (the direction we are looking)
   glm::vec3 movement = glm::normalize(m_view - m_position);
