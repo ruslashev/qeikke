@@ -21,7 +21,7 @@ static const char *map_frag = _glsl(
   varying vec3 vertex_normal_f;
   uniform sampler2D texture_sampler;
   void main() {
-    gl_FragColor = vec4(vertex_normal_f, 1.0);
+    gl_FragColor = vec4(texture2D(texture_sampler, texture_coord_f).xyz, 1.0);
   }
 );
 

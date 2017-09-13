@@ -7,6 +7,8 @@
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 
+#include "../engine/ogl.hh"
+
 class Batch;
 class Texture;
 class Camera;
@@ -15,8 +17,11 @@ class Renderer {
   int m_frame;
   std::map<std::string, Texture*> m_texture_map;
 
-  glm::mat4 m_modelview_matrix, m_projection_matrix;
+  glm::mat4 _projection, _view;
   int m_viewport[4];
+
+  shader_program _sp;
+  unsigned int _mvp_unif, _texture_sampler_unif;
 public:
   Renderer();
 
@@ -25,27 +30,22 @@ public:
   void upload_textures();
 
   // unproject
-  inline bool project(glm::vec3 vec, int &x, int &y);
-  inline bool project(glm::vec4 vec, int &x, int &y);
+  bool project(glm::vec3 vec, int &x, int &y);
+  bool project(glm::vec4 vec, int &x, int &y);
 
-  const glm::mat4 & get_modelview_matrix()  { return m_modelview_matrix; }
-  const glm::mat4 & get_projection_matrix() { return m_projection_matrix; }
+  const glm::mat4 & get_modelview_matrix()  { return _view; }
+  const glm::mat4 & get_projection_matrix() { return _projection; }
 
   inline int get_frame() { return m_frame; }
   void next_frame() { m_frame++; }
 
-  // init
-  void init();
-
-  // viewport
   void set_viewport(const int left, const int top, const int width
       , const int height);
   void set_renderport(const int left, const int top, const int width
       , const int height);
   void set_view(Camera* camera);
 
-  // batch
-  Batch* create_batch();
+  unsigned int vertex_pos_attr, texture_coord_attr, vertex_normal_attr;
 };
 
 extern Renderer* renderer;

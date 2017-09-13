@@ -61,7 +61,6 @@ void load() {
 
   d3c_cam->set_position(glm::vec3(100, 100, 50));
 
-  renderer->init();
   renderer->set_viewport(0, 0, 800, 600);
 
   std::string name = "level";
@@ -89,11 +88,6 @@ static void update(double dt, double t) {
 }
 
 static void draw(double alpha) {
-  glm::mat4 projection = glm::perspective(glm::radians(fov)
-      , (float)g_screen->get_window_width() / (float)g_screen->get_window_height()
-      , 0.1f, 10000.f)
-    , view = cam->compute_view_mat();
-
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   renderer->set_view(d3c_cam);

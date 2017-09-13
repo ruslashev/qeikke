@@ -326,23 +326,20 @@ void Portal_area::read_from_file(std::ifstream &file) {
   log_debug << num_surfaces << " surface(s)" << endl;
 
   for(int i=0; i<num_surfaces; i++) {
-    // create new batch...
-    Batch* batch = renderer->create_batch();
     std::vector<Vertex_doom3> vertices;
     std::vector<unsigned int> indices;
 
     // read surface...
-    std::string name = proc_get_next_string(file);
-    name.append(".tga");
+    std::string name = proc_get_next_string(file) + ".tga";
 
     Texture* texture = renderer->get_texture_from_file(name.c_str());
-    m_textures.push_back( texture );
+    m_textures.push_back(texture);
 
     int num_verts = proc_get_next_int(file);
     int num_ind = proc_get_next_int(file);
 
-    vertices.resize( num_verts );
-    indices.resize( num_ind );
+    vertices.resize(num_verts);
+    indices.resize(num_ind);
 
     for (int j=0; j<num_verts; j++) {
       vertices[j].vertex.x = atof(proc_get_next_value(file).c_str());
@@ -356,11 +353,12 @@ void Portal_area::read_from_file(std::ifstream &file) {
     }
     for (int j = 0; j < num_ind; j++)
       indices[j] = atoi(proc_get_next_value(file).c_str());
-    // save batch..
     log_debug << "surface, num_of_verts: " << vertices.size()
       << ", num_of_indices: " << indices.size() << endl;
-    batch->set_vertices(vertices.data(), vertices.size(), sizeof(Vertex_doom3));
-    batch->set_indices(indices.data(), indices.size(), sizeof(unsigned int));
+    Batch *batch = new Batch(vertices.data(), vertices.size()
+        , sizeof(Vertex_doom3), indices.data(), indices.size()
+        , sizeof(unsigned int), renderer->vertex_pos_attr
+        , renderer->texture_coord_attr, renderer->vertex_normal_attr);
     m_batches.push_back(batch);
   }
   log_success << m_name << " loaded succesfully " << endl;
