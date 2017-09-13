@@ -59,7 +59,7 @@ static void mouse_button_event(int button, bool down, int x, int y) {
 void load() {
   g_screen->lock_mouse();
 
-  d3c_cam->set_position( glm::vec3(100,100,50) );
+  d3c_cam->set_position(glm::vec3(100, 100, 50));
 
   renderer->init();
   renderer->set_viewport(0, 0, 800, 600);
@@ -71,12 +71,6 @@ void load() {
   bsp.load_cm(name + ".cm");
 
   renderer->upload_textures();
-
-  glEnable(GL_CULL_FACE);
-  glCullFace(GL_FRONT);
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glDepthFunc(GL_LEQUAL);
 }
 
 static void update(double dt, double t) {
@@ -84,11 +78,11 @@ static void update(double dt, double t) {
   d3c_cam->update(move, strafe, dt);
   glm::vec3 end = d3c_cam->get_position();
 
-  if(use_collision) {
+  if (use_collision) {
     glm::vec3 end_collided = start;
-    while(end_collided != end) {
+    while (end_collided != end) {
       end_collided = end;
-      bsp.trace( start, end, 10.0f);
+      bsp.trace(start, end, 10.0f);
     }
     d3c_cam->set_position(end_collided);
   }
@@ -103,8 +97,6 @@ static void draw(double alpha) {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   renderer->set_view(d3c_cam);
-
-  glEnable(GL_TEXTURE_2D);
 
   scene.render(d3c_cam);
 

@@ -36,10 +36,16 @@ Texture* Renderer::get_texture(const std::string & name) {
 }
 
 void Renderer::init() {
-  glClearColor( 0, 0, 0, 1);
+  glClearColor(0, 0, 0, 1);
 
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_SCISSOR_TEST);
+  glEnable(GL_CULL_FACE);
+  glCullFace(GL_FRONT);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glDepthFunc(GL_LEQUAL);
+  glEnable(GL_TEXTURE_2D);
 }
 
 void Renderer::set_viewport(const int left, const int top, const int width, const int height) {
