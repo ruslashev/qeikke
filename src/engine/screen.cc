@@ -120,8 +120,8 @@ void screen::mainloop(void (*load_cb)(void)
     std::clock_t draw_end_c = std::clock();
     std::chrono::duration<double, std::milli> draw_duration_w = draw_end_w
       - draw_begin_w;
-    float draw_duration_c = ((float)(draw_end_c - draw_begin_c) / CLOCKS_PER_SEC)
-      * 1000.f;
+    double draw_duration_c = ((double)(draw_end_c - draw_begin_c) / CLOCKS_PER_SEC)
+      * 1000.;
 
     SDL_GL_SwapWindow(_window);
 

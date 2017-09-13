@@ -19,7 +19,7 @@ public:
   unsigned int get_tex_id() { return m_tex_id; }
 
   void set_image(Image* image);
-  void set_image(int index, Image* image);
+  void set_image(unsigned int index, Image* image);
 
   void clear();
   void set_num_images(int count);

@@ -235,7 +235,7 @@ void Image::create_empty() {
   // top line
   memset(m_pixels, 0, m_width*sizeof(char)*m_pixel_depth/8);
   // left line
-  for(int i=0; i<m_height; ++i) {
+  for(unsigned int i=0; i<m_height; ++i) {
     m_pixels[i*m_width*sizeof(char)*m_pixel_depth/8  ] = 0;
     m_pixels[i*m_width*sizeof(char)*m_pixel_depth/8+1] = 0;
     m_pixels[i*m_width*sizeof(char)*m_pixel_depth/8+2] = 0;

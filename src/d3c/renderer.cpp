@@ -6,6 +6,7 @@
 #include "scene/camera.hpp"
 #include "../engine/screen.hh"
 #include "../engine/shaders.hh"
+#include "../engine/math.hh"
 
 #include <GL/glew.h>
 #include <GL/glu.h>
@@ -74,7 +75,7 @@ bool Renderer::project(glm::vec3 vec, int &x, int &y) {
 bool Renderer::project(glm::vec4 vec, int &x, int &y) {
   vec = _projection * (_view * vec);
 
-  if( vec.w == 0) {
+  if (feq(vec.w, 0)) {
     x = y = 0;
     return false;
   }

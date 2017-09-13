@@ -25,7 +25,7 @@ void Texture::set_image(Image* image) {
   m_images.push_back(image);
 }
 
-void Texture::set_image(int index, Image* image) {
+void Texture::set_image(unsigned int index, Image* image) {
   if(index >= m_images.size()) {
     log_warning << "Illegal argument to Texture::set_image(): " << index << endl;
     return;
@@ -87,6 +87,7 @@ bool Texture::upload_texture() {
                          break;
     case Image::GREYSCALE: format = GL_ALPHA;
                            break;
+    default: break;
   }
 
   switch(m_type) {
@@ -104,17 +105,7 @@ bool Texture::upload_texture() {
     case TEX_2D:   dimension = GL_TEXTURE_2D;
                    log_debug_multiple << "type = GL_TEXTURE_2D" << endl;
                    break;
-    // case TEX_3D:   dimension = GL_TEXTURE_3D;
-    //                log_debug_multiple << "type = GL_TEXTURE_3D" << endl;
-    //                break;
-    // case TEX_CUBE: if(!GL_ARB_texture_cube_map_supported) {
-    //   log_warning << "GL_TEXTURE_CUBE_MAP is not supported!" << endl;
-    //   dimension = GL_TEXTURE_2D;
-    // } else {
-    //   dimension = GL_TEXTURE_CUBE_MAP_ARB;
-    //   log_debug_multiple << "type = GL_TEXTURE_CUBE_MAP_ARB" << endl;
-    // }
-    //                break;
+    default: break;
   }
 
   glBindTexture( dimension, m_tex_id);
@@ -145,6 +136,7 @@ bool Texture::upload_texture() {
                              break;
         case Image::GREYSCALE: format = GL_ALPHA;
                                break;
+        default: break;
       }
       gluBuild2DMipmaps( cube_map_faces[i], format, m_images[i]->get_image_width(), m_images[i]->get_image_height(),
           format, type, m_images[i]->get_pixels() );
