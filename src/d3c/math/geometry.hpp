@@ -13,40 +13,33 @@
 #ifndef _GEOMETRY_
 #define _GEOMETRY_ 1
 
-#include <iostream>
-#include "vector.hpp"
+#include <glm/vec3.hpp>
+#include <glm/glm.hpp>
 
-
-//==============================================================================
-//  Plane
-//==============================================================================
-class Plane {
-public:
-  // constructors
-  Plane(void) {}
-  Plane(const Vector3f& n_normal, float n_d ) : normal(n_normal), d(n_d) {}
+struct Plane {
+  Plane() {}
+  Plane(const glm::vec3 &n_normal, float n_d) : normal(n_normal), d(n_d) {}
 
   ~Plane() {}
 
   // vector algebra
   inline void normalize() {
-    float inv_length = 1.0f / normal.get_length();
+    float inv_length = 1.0f / normal.length();
     normal *= inv_length;
     d *= inv_length;
   }
 
-  inline bool is_in_front(const Vector3f & point) {
-    return (point*normal+d > 0);
+  inline bool is_in_front(const glm::vec3 &point) {
+    return (glm::dot(point, normal) + d > 0);
   }
 
-  inline float distance(const Vector3f & point) {
-    return point*normal-d;
+  inline float distance(const glm::vec3 &point) {
+    return glm::dot(point, normal) - d;
   }
 
-  // member variables
-  Vector3f normal;
+  glm::vec3 normal;
   float d;
 };
 
-#endif	/* _GEOMETRY_ */
+#endif /* _GEOMETRY_ */
 

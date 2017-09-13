@@ -16,8 +16,9 @@
 #include <string>
 #include <map>
 
-#include "math/vector.hpp"
-#include "math/matrix.hpp"
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+#include <glm/mat4x4.hpp>
 
 class Batch;
 class Texture;
@@ -36,10 +37,10 @@ public:
   Texture* get_texture(const std::string & name);
 
   // unproject
-  inline bool project(Vector3f vec, int &x, int &y) {
-    return project( Vector4f( vec.x, vec.y, vec.z, 1.0f ), x, y);
+  inline bool project(glm::vec3 vec, int &x, int &y) {
+    return project( glm::vec4( vec.x, vec.y, vec.z, 1.0f ), x, y);
   }
-  inline bool project(Vector4f vec, int &x, int &y) {
+  inline bool project(glm::vec4 vec, int &x, int &y) {
     vec = m_projection_matrix * (m_modelview_matrix * vec);
 
     if( vec.w == 0) {
@@ -58,8 +59,8 @@ public:
 
     return true;
   }
-  const Matrix4x4f & get_modelview_matrix()  { return m_modelview_matrix; }
-  const Matrix4x4f & get_projection_matrix() { return m_projection_matrix; }
+  const glm::mat4 & get_modelview_matrix()  { return m_modelview_matrix; }
+  const glm::mat4 & get_projection_matrix() { return m_projection_matrix; }
 
   // frames..
   inline int get_frame() { return m_frame; }
@@ -86,7 +87,7 @@ protected:
   std::map<std::string, Texture*> m_texture_map;
 
   // use voor unproject..
-  Matrix4x4f m_modelview_matrix, m_projection_matrix;
+  glm::mat4 m_modelview_matrix, m_projection_matrix;
   int m_viewport[4];
 private:
 };

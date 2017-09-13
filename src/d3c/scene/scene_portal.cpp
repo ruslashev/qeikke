@@ -12,7 +12,6 @@
 
 #include "scene_portal.hpp"
 #include "../misc/log.hpp"
-#include "../math/vector.hpp"
 #include "camera.hpp"
 #include "../../engine/screen.hh"
 
@@ -24,9 +23,9 @@
 //  Vertex_doom3
 //==============================================================================
 struct Vertex_doom3 {
-  Vector3f vertex;
-  Vector2f texcoord;
-  Vector3f normal;
+  glm::vec3 vertex;
+  glm::vec2 texcoord;
+  glm::vec3 normal;
 };
 
 
@@ -185,7 +184,7 @@ void Portal_portal::transform_points() {
 //==============================================================================
 //  Scene_portal::get_area()
 //==============================================================================
-int Scene_portal::get_area(const Vector3f & position) {
+int Scene_portal::get_area(const glm::vec3 & position) {
   if(!m_nodes.size()) {
     return 0;
   }
@@ -347,7 +346,7 @@ void Portal_portal::read_from_file(std::ifstream &file) {
   m_transformed_points.resize(num_points);
 
   for(int i=0; i<num_points; ++i) {
-    Vector3f tmp;
+    glm::vec3 tmp;
     tmp.x = proc_get_next_float( file );
     tmp.y = proc_get_next_float( file );
     tmp.z = proc_get_next_float( file );

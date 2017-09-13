@@ -12,7 +12,6 @@
 
 #include "collision_set_bsp.hpp"
 #include "../misc/log.hpp"
-#include "../math/vector.hpp"
 #include "../math/geometry.hpp"
 
 #include <string>
@@ -31,7 +30,7 @@ bool bsp_debug;
 //==============================================================================
 //  Kd_tree_node::trace()
 //==============================================================================
-void Kd_tree_node::trace(const Vector3f & start, Vector3f & end, float radius) {
+void Kd_tree_node::trace(const glm::vec3 & start, glm::vec3 & end, float radius) {
   // walk through the k-D tree to find brushes..
   int num_brushes = m_brushes.size();
 
@@ -87,7 +86,7 @@ void Kd_tree_node::insert_brush(Collision_brush* brush) {
 //==============================================================================
 //  Collision_set_bsp::trace()
 //==============================================================================
-void Collision_set_bsp::trace(const Vector3f & start, Vector3f & end, float radius) {
+void Collision_set_bsp::trace(const glm::vec3 & start, glm::vec3 & end, float radius) {
   if(m_kd_tree) {
     m_kd_tree->trace( start, end, radius );
   }
@@ -96,7 +95,7 @@ void Collision_set_bsp::trace(const Vector3f & start, Vector3f & end, float radi
 //==============================================================================
 //  Collision_brush::trace()
 //==============================================================================
-void Collision_brush::trace(const Vector3f & start, const Vector3f & end, float radius, Vector3f & output) {
+void Collision_brush::trace(const glm::vec3 & start, const glm::vec3 & end, float radius, glm::vec3 & output) {
   float min_fraction = -99999.0f;
   int min_plane = -1;
 
@@ -136,7 +135,7 @@ void Collision_brush::trace(const Vector3f & start, const Vector3f & end, float 
 //==============================================================================
 //  Debug functions
 //==============================================================================
-void render_cube(Vector3f min, Vector3f max) {
+void render_cube(glm::vec3 min, glm::vec3 max) {
   glVertex3f( min.x, max.y, min.z );
   glVertex3f( min.x, min.y, min.z );
 
@@ -177,64 +176,6 @@ void render_cube(Vector3f min, Vector3f max) {
   glVertex3f( max.x, min.y, min.z );
   glVertex3f( min.x, min.y, min.z );
 }
-
-//==============================================================================
-//  Kd_tree_node::render_debug()
-//==============================================================================
-void Kd_tree_node::render_debug(Vector3f min, Vector3f max) {
-  if(index<0) {
-    return;
-  }
-
-  switch(index) {
-    case 0:		// yz plane;
-      render_cube( Vector3f(distance, min.y, min.z), Vector3f(distance, max.y, max.z));
-      child_front->render_debug( Vector3f(distance, min.y, min.z), max );
-      child_back->render_debug( min, Vector3f(distance, max.y, max.z) );
-      break;
-    case 1:		// xz plane;
-      render_cube( Vector3f(min.x, distance, min.z), Vector3f(max.x, distance, max.z));
-      child_front->render_debug( Vector3f(min.x, distance, min.z), max );
-      child_back->render_debug( min, Vector3f(max.x, distance, max.z) );
-      break;
-    case 2:		// xy plane;
-      render_cube( Vector3f(min.x, min.y, distance), Vector3f(max.x, max.y, distance));
-      child_front->render_debug( Vector3f(min.x, min.y, distance), max );
-      child_back->render_debug( min, Vector3f(max.x, max.y, distance) );
-      break;
-  }
-}
-
-//==============================================================================
-//  Collision_set_bsp::render_tree()
-//==============================================================================
-void Collision_set_bsp::render_tree() {
-  glColor3f(0, 1, 0);
-  glBegin(GL_LINES);
-  if(m_kd_tree) {
-    m_kd_tree->render_debug(Vector3f(-1000,-1000,-1000), Vector3f(1000,1000,1000));
-  }
-  glEnd();
-}
-
-//==============================================================================
-//  Collision_set_bsp::render_brushes()
-//==============================================================================
-void Collision_set_bsp::render_brushes() {
-  if(bsp_debug) {
-    int num_collision_brushes  = debug_bsp_collision_brushes.size();
-
-    glColor3f(1, 0, 0);
-    glBegin(GL_LINES);
-    for(int i=0; i<num_collision_brushes; ++i) {
-      render_cube(debug_bsp_collision_brushes[i]->m_min, debug_bsp_collision_brushes[i]->m_max);
-    }
-    glEnd();
-
-    debug_bsp_collision_brushes.clear();
-  }
-}
-
 
 //============================================================================//
 //                                                                            //
@@ -289,7 +230,7 @@ void Collision_set_bsp::load_cm(const std::string & name) {
                 m_vertices.resize(num_vertices);
 
                 for(int i=0; i<num_vertices; ++i) {
-                Vector3f vertex;
+                glm::vec3 vertex;
                 vertex.x = cm_get_next_float(file);
                 vertex.y = cm_get_next_float(file);
                 vertex.z = cm_get_next_float(file);

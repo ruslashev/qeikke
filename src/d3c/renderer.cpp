@@ -113,16 +113,16 @@ void Renderer::set_view(Camera* camera) {
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();                                   // Reset The matrix
 
-  static Matrix4x4f mat;
-  const Vector3f eye = camera->get_position();
-  mat = Matrix4x4f( camera->get_orientation() );
+  static glm::mat4 mat;
+  const glm::vec3 eye = camera->get_position();
+  mat = glm::mat4( camera->get_orientation() );
 
-  glMultMatrixf(mat);
+  glMultMatrixf(&mat[0][0]);
   glTranslated(-eye.x,-eye.y,-eye.z );
 
   // setup matrixes
-  glGetFloatv(GL_MODELVIEW_MATRIX, m_modelview_matrix);
-  glGetFloatv(GL_PROJECTION_MATRIX, m_projection_matrix);
+  glGetFloatv(GL_MODELVIEW_MATRIX, &m_modelview_matrix[0][0]);
+  glGetFloatv(GL_PROJECTION_MATRIX, &m_projection_matrix[0][0]);
   glGetIntegerv(GL_VIEWPORT, m_viewport);
 
   // update frustum of camera

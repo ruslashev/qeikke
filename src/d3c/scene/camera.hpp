@@ -13,9 +13,8 @@
 #ifndef _CAMERA_
 #define _CAMERA_ 1
 
-#include "../math/matrix.hpp"
-#include "../math/vector.hpp"
 #include "../math/geometry.hpp"
+#include <glm/gtc/matrix_transform.hpp>
 
 enum Camera_type {
   CAM_3D = 0,
@@ -36,16 +35,16 @@ class Camera_controller_fps {
 public:
   Camera_controller_fps();
 
-  inline void set_position (const Vector3f & position) {
+  inline void set_position (const glm::vec3 &position) {
     look_at( position, m_view + (position - m_position), m_up);
   }
-  inline void look_at( const Vector3f & eye, const Vector3f & center, const Vector3f & up) {
-    m_orientation.look_at( eye, center, up );
+  inline void look_at( const glm::vec3 & eye, const glm::vec3 & center, const glm::vec3 & up) {
+    m_orientation = glm::lookAt(eye, center, up);
     m_position = eye;
     m_up = up;
     m_view = center;
   }
-  void set_rotation(float angle, Vector3f axis);
+  void set_rotation(float angle, glm::vec3 axis);
   void set_rotation(float angle_x, float angle_z);
   void strafe(float speed);
   void move(float speed);
@@ -54,19 +53,19 @@ public:
 
   virtual void update() {}
 
-  virtual void set_orientation(const Orientation & orientation) { m_orientation = orientation; };
+  virtual void set_orientation(const glm::mat3 & orientation) { m_orientation = orientation; };
 
-  const Position    & get_position()    const { return m_position;    };
-  const Orientation & get_orientation() const { return m_orientation; };
+  const glm::vec3 & get_position()    const { return m_position;    };
+  const glm::mat3 & get_orientation() const { return m_orientation; };
 private:
   float m_speed;
 
-  Vector3f m_view;
-  Vector3f m_strafe;
-  Vector3f m_up;
+  glm::vec3 m_view;
+  glm::vec3 m_strafe;
+  glm::vec3 m_up;
 
-  Position    m_position;
-  Orientation m_orientation;
+  glm::vec3 m_position;
+  glm::mat3 m_orientation;
 };
 
 class Camera {
@@ -86,11 +85,11 @@ public:
   void update_view_angles(float xrel, float yrel);
   void update(int imove, int istrafe, float dt);
 
-  const Vector3f & get_position() const {
+  const glm::vec3 & get_position() const {
     return (m_controlled ? m_controller->get_position() : m_position);
   }
 
-  const Orientation & get_orientation() const {
+  const glm::mat3 & get_orientation() const {
     return (m_controlled ? m_controller->get_orientation() : m_orientation);
   }
 
@@ -114,8 +113,8 @@ private:
   bool m_controlled;
 
   Camera_controller_fps* m_controller;
-  Position    m_position;
-  Orientation m_orientation;
+  glm::vec3 m_position;
+  glm::mat3 m_orientation;
 };
 
 #endif /* _CAMERA_ */

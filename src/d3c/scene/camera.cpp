@@ -3,6 +3,7 @@
 
 #include "../renderer.hpp"
 #include "../../engine/screen.hh"
+#include "../math.hpp"
 
 //==============================================================================
 //  Camera::Camera
@@ -31,7 +32,7 @@ void Camera::update_view_angles(float xrel, float yrel) {
   float yaw = xrel * sensitivity * m_yaw;
   float pitch = yrel * sensitivity * m_pitch;
 
-  m_control_fps->set_rotation(deg_to_rad(-yaw), deg_to_rad(-pitch));
+  m_control_fps->set_rotation(glm::radians(-yaw), glm::radians(-pitch));
 }
 
 void Camera::update(int imove, int istrafe, float dt) {
@@ -66,32 +67,32 @@ void Camera::update_frustum() {
 
   // This will extract the RIGHT side of the frustum
   m_frustum_planes[FRUSTUM_RIGHT ] = Plane(
-      Vector3f( clip[ 3] - clip[ 0], clip[ 7] - clip[ 4], clip[11] - clip[ 8])
+      glm::vec3( clip[ 3] - clip[ 0], clip[ 7] - clip[ 4], clip[11] - clip[ 8])
       , clip[15] - clip[12]);
 
   // This will extract the LEFT side of the frustum
   m_frustum_planes[FRUSTUM_LEFT  ] = Plane(
-      Vector3f( clip[ 3] + clip[ 0], clip[ 7] + clip[ 4], clip[11] + clip[ 8])
+      glm::vec3( clip[ 3] + clip[ 0], clip[ 7] + clip[ 4], clip[11] + clip[ 8])
       , clip[15] + clip[12]);
 
   // This will extract the BOTTOM side of the frustum
   m_frustum_planes[FRUSTUM_BOTTOM] = Plane(
-      Vector3f( clip[ 3] + clip[ 1], clip[ 7] + clip[ 5], clip[11] + clip[ 9])
+      glm::vec3( clip[ 3] + clip[ 1], clip[ 7] + clip[ 5], clip[11] + clip[ 9])
       , clip[15] + clip[13]);
 
   // This will extract the TOP side of the frustum
   m_frustum_planes[FRUSTUM_TOP   ] = Plane(
-      Vector3f( clip[ 3] - clip[ 1], clip[ 7] - clip[ 5], clip[11] - clip[ 9])
+      glm::vec3( clip[ 3] - clip[ 1], clip[ 7] - clip[ 5], clip[11] - clip[ 9])
       , clip[15] - clip[13]);
 
   // This will extract the BACK side of the frustum
   m_frustum_planes[FRUSTUM_BACK  ] = Plane(
-      Vector3f( clip[ 3] - clip[ 2], clip[ 7] - clip[ 6], clip[11] - clip[10])
+      glm::vec3( clip[ 3] - clip[ 2], clip[ 7] - clip[ 6], clip[11] - clip[10])
       , clip[15] - clip[14]);
 
   // This will extract the FRONT side of the frustum
   m_frustum_planes[FRUSTUM_FRONT ] = Plane(
-      Vector3f( clip[ 3] + clip[ 2], clip[ 7] + clip[ 6], clip[11] + clip[10])
+      glm::vec3( clip[ 3] + clip[ 2], clip[ 7] + clip[ 6], clip[11] + clip[10])
       , clip[15] + clip[14]);
 
   // And normalize..
@@ -106,9 +107,9 @@ void Camera::update_frustum() {
 // remember, z is up
 //==============================================================================
 Camera_controller_fps::Camera_controller_fps() {
-  look_at( Vector3f(0.0, 0.0, 0.0),
-      Vector3f(0.0, 1.0, 0.5),
-      Vector3f(0.0, 0.0, 1.0) );
+  look_at( glm::vec3(0.0, 0.0, 0.0),
+      glm::vec3(0.0, 1.0, 0.5),
+      glm::vec3(0.0, 0.0, 1.0) );
 
   m_speed = 150.0f;
 }
@@ -120,25 +121,24 @@ void Camera_controller_fps::set_rotation(float angle_z, float angle_y) {
   // Todo: if the current rotation (in radians) is greater than 1.0,
   // we want to cap it.
 
-  Vector3f axis = cross(m_view - m_position, m_up);
-  axis.normalize();
+  glm::vec3 axis = cross(m_view - m_position, m_up);
+  axis = glm::normalize(axis);
 
   set_rotation(angle_y, axis);
   // Rotate around the y axis no matter what the current_rot_x is
-  set_rotation(angle_z, Vector3f(0, 0, 1) );
+  set_rotation(angle_z, glm::vec3(0, 0, 1) );
 }
 
 //==============================================================================
 //  Camera_controller_fps::set_rotation()
 //==============================================================================
-void Camera_controller_fps::set_rotation(float angle, Vector3f axis) {
-  Vector3f new_view;
+void Camera_controller_fps::set_rotation(float angle, glm::vec3 axis) {
+  glm::vec3 new_view;
   // Get the view vector (The direction we are facing)
-  Vector3f view = m_view - m_position;
+  glm::vec3 view = m_view - m_position;
 
   // build rotation matrix
-  Matrix3x3f rotation;
-  rotation.set_rotation_axis( angle, axis );
+  glm::mat3 rotation = set_rotation_axis(angle, axis);
 
   new_view = rotation * view;
   m_up = rotation * m_up;
@@ -148,7 +148,7 @@ void Camera_controller_fps::set_rotation(float angle, Vector3f axis) {
   m_view = m_position + new_view;
 
   // update strafe
-  m_strafe = cross(new_view.get_normalized(), m_up).get_normalized();
+  m_strafe = glm::normalize(cross(glm::normalize(new_view), m_up));
 
   look_at( m_position, m_view, m_up);
 }
@@ -171,8 +171,7 @@ void Camera_controller_fps::strafe(float speed) {
 //==============================================================================
 void Camera_controller_fps::move(float speed) {
   // Get the current view vector (the direction we are looking)
-  Vector3f movement = m_view - m_position;
-  movement.normalize();
+  glm::vec3 movement = glm::normalize(m_view - m_position);
 
   movement *= speed;
 
@@ -182,7 +181,7 @@ void Camera_controller_fps::move(float speed) {
 
 void Camera_controller_fps::update(int imove, int istrafe, float dt) {
   float m_speed = 150.f, speed = m_speed * dt
-    , speeds2 = fast_inv_sqrt(2) * m_speed * dt;
+    , speeds2 = 1.f / sqrtf(2.f) * m_speed * dt;
   if (imove != 0 && istrafe == 0) {
     if (imove > 0)
       move(speed);

@@ -59,7 +59,7 @@ static void mouse_button_event(int button, bool down, int x, int y) {
 void load() {
   g_screen->lock_mouse();
 
-  d3c_cam->get_controller()->set_position( Vector3f(100,100,50) );
+  d3c_cam->get_controller()->set_position( glm::vec3(100,100,50) );
 
   renderer->init();
   renderer->set_viewport(0, 0, 800, 600);
@@ -80,12 +80,12 @@ void load() {
 }
 
 static void update(double dt, double t) {
-  Vector3f start = d3c_cam->get_position();
+  glm::vec3 start = d3c_cam->get_position();
   d3c_cam->update(move, strafe, dt);
-  Vector3f end = d3c_cam->get_position();
+  glm::vec3 end = d3c_cam->get_position();
 
   if(use_collision) {
-    Vector3f end_collided = start;
+    glm::vec3 end_collided = start;
     while(end_collided != end) {
       end_collided = end;
       bsp.trace( start, end, 10.0f);

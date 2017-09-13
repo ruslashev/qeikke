@@ -14,8 +14,6 @@
 #define _PORTAL_SCENE_ 1
 
 #include "../model/batch.hpp"
-#include "../math/vector.hpp"
-#include "../math/matrix.hpp"
 #include "../math/geometry.hpp"
 #include "../renderer.hpp"
 #include "../material/texture.hpp"
@@ -91,7 +89,7 @@ private:
   Vector2i m_transformed_min;
   Vector2i m_transformed_max;
 
-  std::vector<Vector3f> m_points;
+  std::vector<glm::vec3> m_points;
   std::vector<Vector2i> m_transformed_points;
   int m_area_pos;
   int m_area_neg;
@@ -111,7 +109,7 @@ public:
   void load_proc(const std::string & name);
 
   Portal_area * get_area(int i) { return m_areas[i]; }
-  int get_area(const Vector3f & position);
+  int get_area(const glm::vec3 & position);
 
   int get_area_index_by_name(const std::string & name);
 private:
@@ -132,3 +130,4 @@ extern std::vector<Vector2i> portal_debug_lines;
 void portal_add_debug_line(Vector2i vec1, Vector2i vec2);
 
 #endif /* _PORTAL_SCENE_ */
+
