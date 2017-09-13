@@ -6,34 +6,54 @@
 #include "../math.hpp"
 
 Camera::Camera() {
-  m_controlled = false;
   set_perspective(45.0f, 0.15f ,50000.0f);
   m_type = CAM_3D;
 
   log_init << "Camera initialization" << endl;
 
-  m_control_fps = new Camera_controller_fps();
-  set_controller( m_control_fps );
-  set_controlled(true);
-
   pitch = yaw = 0;
+
+  look_at( glm::vec3(0.0, 0.0, 0.0),
+      glm::vec3(0.0, 1.0, 0.5),
+      glm::vec3(0.0, 0.0, 1.0) );
+
+  m_speed = 150.0f;
 }
 
 Camera::~Camera() {
-  delete m_control_fps;
 }
 
 const float sensitivity = 3.f, m_yaw = 0.022, m_pitch = 0.022
 , pitch_max = 89.998f;
 void Camera::update_view_angles(float xrel, float yrel) {
-  float yaw = xrel * sensitivity * m_yaw;
-  float pitch = yrel * sensitivity * m_pitch;
-
-  m_control_fps->set_rotation(glm::radians(-yaw), glm::radians(-pitch));
+  float yaw = xrel * sensitivity * m_yaw
+    , pitch = yrel * sensitivity * m_pitch;
+  set_rotation(glm::radians(-yaw), glm::radians(-pitch));
 }
 
 void Camera::update(int imove, int istrafe, float dt) {
-  m_control_fps->update(imove, istrafe, dt);
+  float m_speed = 150.f, speed = m_speed * dt
+    , speeds2 = 1.f / sqrtf(2.f) * m_speed * dt;
+  if (imove != 0 && istrafe == 0) {
+    if (imove > 0)
+      move(speed);
+    else
+      move(-speed);
+  } else if (imove == 0 && istrafe != 0) {
+    if (istrafe > 0)
+      strafe(speed);
+    else
+      strafe(-speed);
+  } else if (imove != 0 && istrafe != 0) {
+    if (imove > 0)
+      move(speeds2);
+    else
+      move(-speeds2);
+    if (istrafe > 0)
+      strafe(speeds2);
+    else
+      strafe(-speeds2);
+  }
 }
 
 void Camera::set_perspective(float fov_y, float near_plane, float far_plane) {
@@ -90,15 +110,7 @@ void Camera::update_frustum() {
 #endif
 }
 
-Camera_controller_fps::Camera_controller_fps() {
-  look_at( glm::vec3(0.0, 0.0, 0.0),
-      glm::vec3(0.0, 1.0, 0.5),
-      glm::vec3(0.0, 0.0, 1.0) );
-
-  m_speed = 150.0f;
-}
-
-void Camera_controller_fps::set_rotation(float angle_z, float angle_y) {
+void Camera::set_rotation(float angle_z, float angle_y) {
   // Todo: if the current rotation (in radians) is greater than 1.0,
   // we want to cap it.
 
@@ -110,7 +122,7 @@ void Camera_controller_fps::set_rotation(float angle_z, float angle_y) {
   set_rotation(angle_z, glm::vec3(0, 0, 1) );
 }
 
-void Camera_controller_fps::set_rotation(float angle, glm::vec3 axis) {
+void Camera::set_rotation(float angle, glm::vec3 axis) {
   glm::vec3 new_view;
   // Get the view vector (The direction we are facing)
   glm::vec3 view = m_view - m_position;
@@ -131,7 +143,7 @@ void Camera_controller_fps::set_rotation(float angle, glm::vec3 axis) {
   look_at( m_position, m_view, m_up);
 }
 
-void Camera_controller_fps::strafe(float speed) {
+void Camera::strafe(float speed) {
   // Add the strafe vector to our position
   m_position.x += m_strafe.x * speed;
   m_position.y += m_strafe.y * speed;
@@ -141,7 +153,7 @@ void Camera_controller_fps::strafe(float speed) {
   m_view.y += m_strafe.y * speed;
 }
 
-void Camera_controller_fps::move(float speed) {
+void Camera::move(float speed) {
   // Get the current view vector (the direction we are looking)
   glm::vec3 movement = glm::normalize(m_view - m_position);
 
@@ -149,30 +161,5 @@ void Camera_controller_fps::move(float speed) {
 
   m_position += movement;
   m_view += movement;
-}
-
-void Camera_controller_fps::update(int imove, int istrafe, float dt) {
-  float m_speed = 150.f, speed = m_speed * dt
-    , speeds2 = 1.f / sqrtf(2.f) * m_speed * dt;
-  if (imove != 0 && istrafe == 0) {
-    if (imove > 0)
-      move(speed);
-    else
-      move(-speed);
-  } else if (imove == 0 && istrafe != 0) {
-    if (istrafe > 0)
-      strafe(speed);
-    else
-      strafe(-speed);
-  } else if (imove != 0 && istrafe != 0) {
-    if (imove > 0)
-      move(speeds2);
-    else
-      move(-speeds2);
-    if (istrafe > 0)
-      strafe(speeds2);
-    else
-      strafe(-speeds2);
-  }
 }
 
