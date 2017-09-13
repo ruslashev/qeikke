@@ -15,10 +15,10 @@ struct Vertex_doom3 {
 
 
 bool portal_debug = false;
-std::vector<Vector2i> portal_debug_lines;
+std::vector<glm::ivec2> portal_debug_lines;
 int portal_debug_areas_rendered = 0;
 
-void portal_add_debug_line(Vector2i vec1, Vector2i vec2) {
+void portal_add_debug_line(glm::ivec2 vec1, glm::ivec2 vec2) {
   portal_debug_lines.push_back(vec1);
   portal_debug_lines.push_back(vec2);
 }
@@ -33,18 +33,18 @@ void Scene_portal::render(Camera* camera) {
     // you're in the void!!
     int num_areas = m_areas.size();
     for(int i=0; i<num_areas; ++i) {
-      m_areas[i]->render( camera, Vector2i(0, 0), Vector2i(g_screen->get_window_width(), g_screen->get_window_height()) );
+      m_areas[i]->render( camera, glm::ivec2(0, 0), glm::ivec2(g_screen->get_window_width(), g_screen->get_window_height()) );
     }
   } else {
     // rename start_area: -1 -> 0, -2 -> 1
     start_area = -1-start_area;
-    m_areas[start_area]->render( camera, Vector2i(0, 0), Vector2i(g_screen->get_window_width(), g_screen->get_window_height()) );
+    m_areas[start_area]->render( camera, glm::ivec2(0, 0), glm::ivec2(g_screen->get_window_width(), g_screen->get_window_height()) );
   }
 
   renderer->set_renderport(0,0, g_screen->get_window_width(), g_screen->get_window_height());
 }
 
-void Portal_area::render(Camera* camera, Vector2i min, Vector2i max) {
+void Portal_area::render(Camera* camera, glm::ivec2 min, glm::ivec2 max) {
   //  hack!!?! only render area once each frame
   if(m_frame_rendered == renderer->get_frame()) {
     return;
@@ -70,7 +70,7 @@ void Portal_area::render(Camera* camera, Vector2i min, Vector2i max) {
   }
 }
 
-void Portal_portal::render_from_area(Camera* camera, int index, Vector2i min, Vector2i max) {
+void Portal_portal::render_from_area(Camera* camera, int index, glm::ivec2 min, glm::ivec2 max) {
   // check if vertices are projected for visibility check
   if(m_frame_rendered != renderer->get_frame()) {
     m_frame_rendered = renderer->get_frame();
@@ -88,8 +88,8 @@ void Portal_portal::render_from_area(Camera* camera, int index, Vector2i min, Ve
   } else if(m_visible<0) {
     // intersection of portal and front plane of frustum
     // set min and max to renderport
-    m_transformed_min = Vector2i(0,0);
-    m_transformed_max = Vector2i(g_screen->get_window_width(), g_screen->get_window_height());
+    m_transformed_min = glm::ivec2(0,0);
+    m_transformed_max = glm::ivec2(g_screen->get_window_width(), g_screen->get_window_height());
 
   }
 
@@ -109,10 +109,10 @@ void Portal_portal::render_from_area(Camera* camera, int index, Vector2i min, Ve
     }
 
     if(portal_debug) {
-      portal_add_debug_line( min, Vector2i(min.x, max.y) );
-      portal_add_debug_line( min, Vector2i(max.x, min.y) );
-      portal_add_debug_line( Vector2i(min.x, max.y), max );
-      portal_add_debug_line( Vector2i(max.x, min.y), max );
+      portal_add_debug_line( min, glm::ivec2(min.x, max.y) );
+      portal_add_debug_line( min, glm::ivec2(max.x, min.y) );
+      portal_add_debug_line( glm::ivec2(min.x, max.y), max );
+      portal_add_debug_line( glm::ivec2(max.x, min.y), max );
     }
   }
 }
@@ -127,8 +127,8 @@ int Portal_portal::check_visibility(Camera* camera) {
 void Portal_portal::transform_points() {
   int num_points = m_points.size();
 
-  m_transformed_min = Vector2i( 99999, 99999);
-  m_transformed_max = Vector2i(-99999,-99999);
+  m_transformed_min = glm::ivec2( 99999, 99999);
+  m_transformed_max = glm::ivec2(-99999,-99999);
 
   for(int i=0; i<num_points; ++i) {
     if(renderer->project( m_points[i], m_transformed_points[i].x, m_transformed_points[i].y)) {

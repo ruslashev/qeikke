@@ -19,20 +19,12 @@ struct Doom3_node {
   int pos_child, neg_child;
 };
 
-class Vector2i {
-public:
-  Vector2i() {}
-  Vector2i(int n_x, int n_y) : x(n_x), y(n_y) {}
-
-  int x, y;
-};
-
 class Portal_area {
 public:
   Portal_area(const std::string & name, int index) : m_name(name), m_index(index) {}
   const std::string & get_name() const { return m_name; }
 
-  void render(Camera* camera, Vector2i min, Vector2i max);
+  void render(Camera* camera, glm::ivec2 min, glm::ivec2 max);
 
   void add_portal(Portal_portal *portal) { m_portals.push_back( portal ); }
 
@@ -52,7 +44,7 @@ class Portal_portal {
 public:
   Portal_portal(Scene_portal* scene) : m_frame_rendered(0) { m_scene = scene; }
 
-  void render_from_area(Camera* camera, int index, Vector2i min, Vector2i max);
+  void render_from_area(Camera* camera, int index, glm::ivec2 min, glm::ivec2 max);
 
   void read_from_file(std::ifstream &file);
 
@@ -61,11 +53,11 @@ public:
 private:
   Scene_portal* m_scene;
 
-  Vector2i m_transformed_min;
-  Vector2i m_transformed_max;
+  glm::ivec2 m_transformed_min;
+  glm::ivec2 m_transformed_max;
 
   std::vector<glm::vec3> m_points;
-  std::vector<Vector2i> m_transformed_points;
+  std::vector<glm::ivec2> m_transformed_points;
   int m_area_pos;
   int m_area_neg;
 
@@ -94,7 +86,7 @@ private:
 
 extern bool portal_debug;
 extern int portal_debug_areas_rendered;
-extern std::vector<Vector2i> portal_debug_lines;
+extern std::vector<glm::ivec2> portal_debug_lines;
 
-void portal_add_debug_line(Vector2i vec1, Vector2i vec2);
+void portal_add_debug_line(glm::ivec2 vec1, glm::ivec2 vec2);
 
