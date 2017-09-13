@@ -3,8 +3,7 @@ warnings = -Wall -Wextra -Wno-unused-parameter -Wno-unused-variable \
 		   -Wnull-dereference -Wformat=2 -Wdisabled-optimization \
 		   -Wsuggest-override -Wlogical-op -Wtrampolines -Wfloat-equal
 flags = -ggdb3 -Og -std=c++0x -fno-rtti -fno-exceptions -static
-# TODO: -lGLU introduced in porting doom3_collision
-libraries = -lSDL2 -lGLEW -lGL -lGLU
+libraries = -lSDL2 -lGLEW -lGL
 CXX = g++
 BIN = qeikke
 

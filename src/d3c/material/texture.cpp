@@ -74,9 +74,11 @@ bool Texture::upload_texture() {
 
   glBindTexture(GL_TEXTURE_2D, _id);
 
-  gluBuild2DMipmaps( GL_TEXTURE_2D, GL_COMPRESSED_RGB
-      , m_images[0]->get_image_width(), m_images[0]->get_image_height()
-      , format, GL_UNSIGNED_BYTE, m_images[0]->get_pixels());
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGB, m_images[0]->get_image_width()
+      , m_images[0]->get_image_height(), 0, format, GL_UNSIGNED_BYTE
+      , m_images[0]->get_pixels());
+
+  glGenerateMipmap(GL_TEXTURE_2D);
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
