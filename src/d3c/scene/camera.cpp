@@ -3,7 +3,6 @@
 
 #include "../renderer.hpp"
 #include "../../engine/screen.hh"
-#include "../math.hpp"
 
 Camera::Camera() {
   set_perspective(45.0f, 0.15f ,50000.0f);
@@ -120,6 +119,29 @@ void Camera::set_rotation(float angle_z, float angle_y) {
   set_rotation(angle_y, axis);
   // Rotate around the y axis no matter what the current_rot_x is
   set_rotation(angle_z, glm::vec3(0, 0, 1) );
+}
+
+static glm::mat3 set_rotation_axis(const double angle, const glm::vec3 & axis) {
+  glm::vec3 u = glm::normalize(axis);
+
+  float sin_angle = sinf(angle), cos_angle = cosf(angle)
+    , one_min_cos_angle = 1.0f - cos_angle;
+
+  glm::mat3 x;
+
+  x[0][0] = u.x * u.x + cos_angle * (1 - u.x * u.x);
+  x[1][0] = u.x * u.y * one_min_cos_angle - sin_angle * u.z;
+  x[2][0] = u.x * u.z * one_min_cos_angle + sin_angle * u.y;
+
+  x[0][1] = u.x * u.y * one_min_cos_angle + sin_angle * u.z;
+  x[1][1] = u.y * u.y + cos_angle * (1 - u.y * u.y);
+  x[2][1] = u.y * u.z * one_min_cos_angle - sin_angle * u.x;
+
+  x[0][2] = u.x * u.z * one_min_cos_angle - sin_angle * u.y;
+  x[1][2] = u.y * u.z * one_min_cos_angle + sin_angle * u.x;
+  x[2][2] = u.z * u.z + cos_angle * (1 - u.z * u.z);
+
+  return x;
 }
 
 void Camera::set_rotation(float angle, glm::vec3 axis) {
