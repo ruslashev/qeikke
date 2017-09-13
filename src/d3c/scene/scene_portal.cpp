@@ -13,7 +13,6 @@ struct Vertex_doom3 {
   glm::vec3 normal;
 };
 
-
 bool portal_debug = false;
 std::vector<glm::ivec2> portal_debug_lines;
 int portal_debug_areas_rendered = 0;
@@ -24,12 +23,12 @@ void portal_add_debug_line(glm::ivec2 vec1, glm::ivec2 vec2) {
 }
 
 void Scene_portal::render(Camera* camera) {
-  //  find start area..
+  // find start area..
   int start_area = get_area( camera->get_position() );
 
   portal_debug_areas_rendered = 0;
 
-  if(start_area >= 0) {
+  if (start_area >= 0) {
     // you're in the void!!
     int num_areas = m_areas.size();
     for(int i=0; i<num_areas; ++i) {
@@ -58,7 +57,7 @@ void Portal_area::render(Camera* camera, glm::ivec2 min, glm::ivec2 max) {
   //  render batches in area..
   int num_batches = m_batches.size();
   for (int j = 0; j < num_batches; ++j) {
-    renderer->bind_texture(m_textures[j]);
+    glBindTexture(GL_TEXTURE_2D, m_textures[j]->get_tex_id());
     m_batches[j]->render();
   }
 
