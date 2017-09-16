@@ -1,5 +1,4 @@
 #include "renderer.hpp"
-#include "material/texture.hpp"
 #include "misc/log.hpp"
 #include "model/batch.hpp"
 #include "scene/camera.hpp"
@@ -35,7 +34,7 @@ Renderer::Renderer()
   _texture_sampler_unif = _sp.bind_uniform("texture_sampler");
 }
 
-Texture* Renderer::get_texture_from_file(const std::string & name) {
+texture* Renderer::get_texture_from_file(const std::string & name) {
   if (m_texture_map.find(name) != m_texture_map.end()) {
     log_debug_multiple << name
       << " found in m_texture_map in Renderer::get_texture_from_file()" << endl;
@@ -43,22 +42,23 @@ Texture* Renderer::get_texture_from_file(const std::string & name) {
   }
   image *img = new image(name);
 
-  Texture *texture = create_texture(name);
-  texture->set_image(img);
+  texture *tex = create_texture(name);
+  tex->set_image(img);
 
-  return texture;
+  return tex;
 }
 
-Texture* Renderer::create_texture(const std::string & name) {
-  Texture* texture = new Texture(name);
-  m_texture_map[name] = texture;
-  return (Texture *)texture;
+texture* Renderer::create_texture(const std::string & name) {
+  texture* tex = new texture(name);
+  m_texture_map[name] = tex;
+  return tex;
 }
 
 void Renderer::upload_textures() {
-  for (std::map<std::string, Texture*>::const_iterator it = m_texture_map.begin()
-      ; it != m_texture_map.end(); ++it)
-    it->second->upload_texture();
+  for (auto it = m_texture_map.begin(); it != m_texture_map.end(); ++it)
+    if (!it->second->upload_texture())
+      warning_ln("failed to upload texture \"%s\": %s", it->first.c_str()
+          , it->second->fail_reason.c_str());
 }
 
 bool Renderer::project(glm::vec3 vec, int &x, int &y) {

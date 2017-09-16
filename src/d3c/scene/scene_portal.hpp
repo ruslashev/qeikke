@@ -3,8 +3,7 @@
 #include "../model/batch.hpp"
 #include "../math/geometry.hpp"
 #include "../renderer.hpp"
-#include "../material/texture.hpp"
-
+#include "../../engine/texture.hh"
 #include "../../engine/ogl.hh"
 
 #include <string>
@@ -33,7 +32,7 @@ private:
   std::string m_name;
   int m_index;
 
-  std::vector<Texture *> m_textures;
+  std::vector<texture *> m_textures;
   std::vector<Batch *> m_batches;
   std::vector<Portal_portal *> m_portals;
 

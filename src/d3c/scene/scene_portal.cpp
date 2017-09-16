@@ -57,7 +57,7 @@ void Portal_area::render(Camera* camera, glm::ivec2 min, glm::ivec2 max) {
   //  render batches in area..
   int num_batches = m_batches.size();
   for (int j = 0; j < num_batches; ++j) {
-    glBindTexture(GL_TEXTURE_2D, m_textures[j]->get_tex_id());
+    glBindTexture(GL_TEXTURE_2D, m_textures[j]->get_id());
     m_batches[j]->render();
   }
 
@@ -313,8 +313,8 @@ void Portal_area::read_from_file(std::ifstream &file) {
     // read surface...
     std::string name = proc_get_next_string(file) + ".tga";
 
-    Texture* texture = renderer->get_texture_from_file(name.c_str());
-    m_textures.push_back(texture);
+    texture *tex = renderer->get_texture_from_file(name.c_str());
+    m_textures.push_back(tex);
 
     int num_verts = proc_get_next_int(file);
     int num_ind = proc_get_next_int(file);

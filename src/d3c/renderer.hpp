@@ -8,14 +8,14 @@
 #include <glm/mat4x4.hpp>
 
 #include "../engine/ogl.hh"
+#include "../engine/texture.hh"
 
 class Batch;
-class Texture;
 class Camera;
 
 class Renderer {
   int m_frame;
-  std::map<std::string, Texture*> m_texture_map;
+  std::map<std::string, texture*> m_texture_map;
 
   glm::mat4 _projection, _view;
   int m_viewport[4];
@@ -25,8 +25,8 @@ class Renderer {
 public:
   Renderer();
 
-  Texture* get_texture_from_file(const std::string & name);
-  Texture* create_texture(const std::string & name);
+  texture* get_texture_from_file(const std::string & name);
+  texture* create_texture(const std::string & name);
   void upload_textures();
 
   // unproject
