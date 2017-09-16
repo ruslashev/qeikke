@@ -21,25 +21,46 @@ void portal_add_debug_line(glm::ivec2 vec1, glm::ivec2 vec2) {
   portal_debug_lines.push_back(vec2);
 }
 
-void Scene_portal::render(camera* cam) {
-  int start_area = get_area(cam->pos);
-  glm::ivec2 min = glm::ivec2(0, 0)
-    , max = glm::ivec2(g_screen->get_window_width()
-        , g_screen->get_window_height());
-
-  portal_debug_areas_rendered = 0;
-
-  if (start_area < 0)
-    m_areas[-1 - start_area]->render(cam, min, max);
-  else // position in the "void", render all areas
-    for (Portal_area *area : m_areas)
-      area->render(cam, min, max);
-
-  renderer->set_renderport(0, 0, g_screen->get_window_width()
-      , g_screen->get_window_height());
+static std::string proc_get_next_value(std::ifstream &file) {
+  std::string s;
+  while (file >> s) {
+    if (s == "/*") // ignore block comments
+      while (s != "*/")
+        file >> s;
+    else if (s == "{" || s == "}") { // ignore braces and parens for purpose
+    } else if (s == "(" || s == ")") { // of simplifying parsing
+    } else
+      return s;
+  }
+  puts("halt and catch fire");
+  exit(666);
 }
 
-void Portal_area::render(camera* cam, glm::ivec2 min, glm::ivec2 max) {
+static std::string proc_get_next_string(std::ifstream &file) {
+  std::string s = proc_get_next_value(file);
+  return s.substr(1, s.size() - 2); // strip quotes
+}
+
+#define proc_get_next_float(x) atof(proc_get_next_value(x).c_str())
+#define proc_get_next_int(x) atoi(proc_get_next_value(x).c_str())
+
+Portal_area::Portal_area(const std::string &name, int index)
+  : m_name(name)
+  , m_index(index)
+  , m_frame_rendered((unsigned long long)-1) {
+}
+
+Portal_area::~Portal_area() {
+  for (const Batch *batch : m_batches)
+    delete batch;
+}
+
+const std::string& Portal_area::get_name() const {
+  return m_name;
+}
+
+void Portal_area::render(const camera *cam, const glm::ivec2 &min
+    , const glm::ivec2 &max) {
   if (m_frame_rendered == g_screen->get_frame_idx())
     return;
   m_frame_rendered = g_screen->get_frame_idx();
@@ -57,7 +78,54 @@ void Portal_area::render(camera* cam, glm::ivec2 min, glm::ivec2 max) {
     m_portals[j]->render_from_area(cam, m_index, min, max);
 }
 
-void Portal_portal::render_from_area(camera* cam, int index, glm::ivec2 min, glm::ivec2 max) {
+void Portal_area::add_portal(Portal_portal *portal) {
+  m_portals.push_back(portal);
+}
+
+void Portal_area::read_from_file(std::ifstream &file) {
+  int num_surfaces = proc_get_next_int(file);
+  for (int i = 0; i < num_surfaces; ++i) {
+    std::vector<Vertex_doom3> vertices;
+    std::vector<unsigned int> indices;
+
+    std::string name = proc_get_next_string(file) + ".tga";
+
+    texture *tex = renderer->get_texture_from_file(name.c_str());
+    m_textures.push_back(tex);
+
+    int num_verts = proc_get_next_int(file);
+    int num_ind = proc_get_next_int(file);
+
+    vertices.resize(num_verts);
+    indices.resize(num_ind);
+
+    for (int j = 0; j < num_verts; ++j) {
+      vertices[j].vertex.x = atof(proc_get_next_value(file).c_str());
+      vertices[j].vertex.z = -atof(proc_get_next_value(file).c_str());
+      vertices[j].vertex.y = atof(proc_get_next_value(file).c_str());
+      vertices[j].texcoord.x = atof(proc_get_next_value(file).c_str());
+      vertices[j].texcoord.y = atof(proc_get_next_value(file).c_str());
+      vertices[j].normal.x = atof(proc_get_next_value(file).c_str());
+      vertices[j].normal.z = -atof(proc_get_next_value(file).c_str());
+      vertices[j].normal.y = atof(proc_get_next_value(file).c_str());
+    }
+    for (int j = 0; j < num_ind; ++j)
+      indices[j] = atoi(proc_get_next_value(file).c_str());
+    Batch *batch = new Batch(vertices.data(), vertices.size()
+        , sizeof(Vertex_doom3), indices.data(), indices.size()
+        , sizeof(unsigned int), renderer->vertex_pos_attr
+        , renderer->texture_coord_attr, renderer->vertex_normal_attr); // trashy
+    m_batches.push_back(batch);
+  }
+}
+
+Portal_portal::Portal_portal(Scene_portal *scene)
+  : m_frame_rendered((unsigned long long)-1) {
+  m_scene = scene;
+}
+
+void Portal_portal::render_from_area(const camera *cam, int index
+    , glm::ivec2 min, glm::ivec2 max) {
   // check if vertices are projected for visibility check
   if (m_frame_rendered != g_screen->get_frame_idx()) {
     m_frame_rendered = g_screen->get_frame_idx();
@@ -66,9 +134,9 @@ void Portal_portal::render_from_area(camera* cam, int index, glm::ivec2 min, glm
     transform_points();
   }
 
-  if (!m_visible) {
+  if (!m_visible)
     return;
-  } else if (m_visible < 0) {
+  else if (m_visible < 0) {
     // intersection of portal and front plane of frustum
     // set min and max to renderport
     m_transformed_min = glm::ivec2(0, 0);
@@ -101,8 +169,33 @@ void Portal_portal::render_from_area(camera* cam, int index, glm::ivec2 min, glm
   }
 }
 
+void Portal_portal::read_from_file(std::ifstream &file) {
+  int num_points = proc_get_next_int(file);
+  int pos_area = proc_get_next_int(file);
+  int neg_area = proc_get_next_int(file);
+
+  m_points.resize(num_points);
+  m_transformed_points.resize(num_points);
+
+  for (int i = 0; i < num_points; ++i) {
+    m_points[i].x = proc_get_next_float(file);
+    m_points[i].z = -proc_get_next_float(file);
+    m_points[i].y = proc_get_next_float(file);
+  }
+
+  m_area_pos = m_scene->get_area_index_by_name("_area"
+      + std::to_string(pos_area));
+  m_area_neg = m_scene->get_area_index_by_name("_area"
+      + std::to_string(neg_area));
+
+  if (m_area_pos>=0)
+    m_scene->get_area(m_area_pos)->add_portal(this);
+  if (m_area_neg>=0)
+    m_scene->get_area(m_area_neg)->add_portal(this);
+}
+
 // 0 = invisible (outside frustrum), 1 = visible, -1 = intersects frontplane
-int Portal_portal::check_visibility(camera *cam) {
+int Portal_portal::check_visibility(const camera *cam) {
   return 1;
 }
 
@@ -125,55 +218,30 @@ void Portal_portal::transform_points() {
     }
 }
 
-int Scene_portal::get_area(const glm::vec3 &position) {
-  if (!m_nodes.size())
-    return 0;
-
-  // walk through nodes
-  const Doom3_node *node = &m_nodes[0];
-  while (true)
-    if (node->plane.is_in_front(position)) { // in front
-      if (node->pos_child > 0)
-        node = &m_nodes[node->pos_child];
-      else
-        return node->pos_child;
-    } else { // backside
-      if (node->neg_child > 0)
-        node = &m_nodes[node->neg_child];
-      else
-        return node->neg_child;
-    }
+Scene_portal::~Scene_portal() {
+  for (const Portal_area *area : m_areas)
+    delete area;
+  for (const Portal_portal *portal : m_portals)
+    delete portal;
 }
 
-int Scene_portal::get_area_index_by_name(const std::string &name) {
-  for (size_t i = 0; i < m_areas.size(); ++i)
-    if (m_areas[i]->get_name() == name)
-      return i;
-  return -1;
-}
+void Scene_portal::render(camera *cam) {
+  int start_area = get_area(cam->pos);
+  glm::ivec2 min = glm::ivec2(0, 0)
+    , max = glm::ivec2(g_screen->get_window_width()
+        , g_screen->get_window_height());
 
-static std::string proc_get_next_value(std::ifstream &file) {
-  std::string s;
-  while (file >> s) {
-    if (s == "/*") // ignore block comments
-      while (s != "*/")
-        file >> s;
-    else if (s == "{" || s == "}") { // ignore braces and parens for purpose
-    } else if (s == "(" || s == ")") { // of simplifying parsing
-    } else
-      return s;
-  }
-  puts("halt and catch fire");
-  exit(666);
-}
+  portal_debug_areas_rendered = 0;
 
-static std::string proc_get_next_string(std::ifstream &file) {
-  std::string s = proc_get_next_value(file);
-  return s.substr(1, s.size() - 2); // strip quotes
-}
+  if (start_area < 0)
+    m_areas[-1 - start_area]->render(cam, min, max);
+  else // position in the "void", render all areas
+    for (Portal_area *area : m_areas)
+      area->render(cam, min, max);
 
-#define proc_get_next_float(x) atof(proc_get_next_value(x).c_str())
-#define proc_get_next_int(x) atoi(proc_get_next_value(x).c_str())
+  renderer->set_renderport(0, 0, g_screen->get_window_width()
+      , g_screen->get_window_height());
+}
 
 void Scene_portal::load_proc(const std::string &name) {
   std::ifstream file(name.c_str());
@@ -219,72 +287,34 @@ void Scene_portal::load_proc(const std::string &name) {
   file.close();
 }
 
-Scene_portal::~Scene_portal() {
-  for (const Portal_area *area : m_areas)
-    delete area;
-  for (const Portal_portal *portal : m_portals)
-    delete portal;
+Portal_area* Scene_portal::get_area(int i) {
+  return m_areas[i];
 }
 
-void Portal_portal::read_from_file(std::ifstream &file) {
-  int num_points = proc_get_next_int(file);
-  int pos_area = proc_get_next_int(file);
-  int neg_area = proc_get_next_int(file);
+int Scene_portal::get_area(const glm::vec3 &position) {
+  if (!m_nodes.size())
+    return 0;
 
-  m_points.resize(num_points);
-  m_transformed_points.resize(num_points);
-
-  for (int i = 0; i < num_points; ++i) {
-    m_points[i].x = proc_get_next_float(file);
-    m_points[i].z = -proc_get_next_float(file);
-    m_points[i].y = proc_get_next_float(file);
-  }
-
-  m_area_pos = m_scene->get_area_index_by_name("_area"
-      + std::to_string(pos_area));
-  m_area_neg = m_scene->get_area_index_by_name("_area"
-      + std::to_string(neg_area));
-
-  if (m_area_pos>=0)
-    m_scene->get_area(m_area_pos)->add_portal(this);
-  if (m_area_neg>=0)
-    m_scene->get_area(m_area_neg)->add_portal(this);
-}
-
-void Portal_area::read_from_file(std::ifstream &file) {
-  int num_surfaces = proc_get_next_int(file);
-  for (int i = 0; i < num_surfaces; ++i) {
-    std::vector<Vertex_doom3> vertices;
-    std::vector<unsigned int> indices;
-
-    std::string name = proc_get_next_string(file) + ".tga";
-
-    texture *tex = renderer->get_texture_from_file(name.c_str());
-    m_textures.push_back(tex);
-
-    int num_verts = proc_get_next_int(file);
-    int num_ind = proc_get_next_int(file);
-
-    vertices.resize(num_verts);
-    indices.resize(num_ind);
-
-    for (int j = 0; j < num_verts; ++j) {
-      vertices[j].vertex.x = atof(proc_get_next_value(file).c_str());
-      vertices[j].vertex.z = -atof(proc_get_next_value(file).c_str());
-      vertices[j].vertex.y = atof(proc_get_next_value(file).c_str());
-      vertices[j].texcoord.x = atof(proc_get_next_value(file).c_str());
-      vertices[j].texcoord.y = atof(proc_get_next_value(file).c_str());
-      vertices[j].normal.x = atof(proc_get_next_value(file).c_str());
-      vertices[j].normal.z = -atof(proc_get_next_value(file).c_str());
-      vertices[j].normal.y = atof(proc_get_next_value(file).c_str());
+  // walk through nodes
+  const Doom3_node *node = &m_nodes[0];
+  while (true)
+    if (node->plane.is_in_front(position)) { // in front
+      if (node->pos_child > 0)
+        node = &m_nodes[node->pos_child];
+      else
+        return node->pos_child;
+    } else { // backside
+      if (node->neg_child > 0)
+        node = &m_nodes[node->neg_child];
+      else
+        return node->neg_child;
     }
-    for (int j = 0; j < num_ind; ++j)
-      indices[j] = atoi(proc_get_next_value(file).c_str());
-    Batch *batch = new Batch(vertices.data(), vertices.size()
-        , sizeof(Vertex_doom3), indices.data(), indices.size()
-        , sizeof(unsigned int), renderer->vertex_pos_attr
-        , renderer->texture_coord_attr, renderer->vertex_normal_attr); // trashy
-    m_batches.push_back(batch);
-  }
+}
+
+int Scene_portal::get_area_index_by_name(const std::string &name) {
+  for (size_t i = 0; i < m_areas.size(); ++i)
+    if (m_areas[i]->get_name() == name)
+      return i;
+  return -1;
 }
 

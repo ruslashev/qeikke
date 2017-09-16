@@ -28,10 +28,11 @@ class Portal_area {
 
   unsigned long long m_frame_rendered;
 public:
-  Portal_area(const std::string &name, int index) : m_name(name), m_index(index) {}
-  const std::string &get_name() const { return m_name; }
-  void render(camera *cam, glm::ivec2 min, glm::ivec2 max);
-  void add_portal(Portal_portal *portal) { m_portals.push_back( portal ); }
+  Portal_area(const std::string &name, int index);
+  ~Portal_area();
+  const std::string &get_name() const;
+  void render(const camera *cam, const glm::ivec2 &min, const glm::ivec2 &max);
+  void add_portal(Portal_portal *portal);
   void read_from_file(std::ifstream &file);
 };
 
@@ -49,10 +50,11 @@ class Portal_portal {
   unsigned long long m_frame_rendered;
   int m_visible;
 public:
-  Portal_portal(Scene_portal *scene) : m_frame_rendered(0) { m_scene = scene; }
-  void render_from_area(camera *cam, int index, glm::ivec2 min, glm::ivec2 max);
+  Portal_portal(Scene_portal *scene);
+  void render_from_area(const camera *cam, int index, glm::ivec2 min
+      , glm::ivec2 max);
   void read_from_file(std::ifstream &file);
-  int check_visibility(camera *cam);
+  int check_visibility(const camera *cam);
   void transform_points();
 };
 
@@ -64,7 +66,7 @@ public:
   ~Scene_portal();
   void render(camera *cam);
   void load_proc(const std::string &name);
-  Portal_area* get_area(int i) { return m_areas[i]; }
+  Portal_area* get_area(int i);
   int get_area(const glm::vec3 &position);
   int get_area_index_by_name(const std::string & name);
 };
