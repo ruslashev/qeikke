@@ -1,6 +1,5 @@
 #include "renderer.hpp"
 #include "material/texture.hpp"
-#include "material/image.hpp"
 #include "misc/log.hpp"
 #include "model/batch.hpp"
 #include "scene/camera.hpp"
@@ -42,10 +41,10 @@ Texture* Renderer::get_texture_from_file(const std::string & name) {
       << " found in m_texture_map in Renderer::get_texture_from_file()" << endl;
     return m_texture_map[name];
   }
-  Image *image = new Image(name);
+  image *img = new image(name);
 
   Texture *texture = create_texture(name);
-  texture->set_image(image);
+  texture->set_image(img);
 
   return texture;
 }

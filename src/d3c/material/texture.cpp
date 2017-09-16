@@ -1,7 +1,7 @@
 #include "texture.hpp"
-#include "image.hpp"
 #include "../misc/log.hpp"
 #include "../../engine/utils.hh"
+#include "../../engine/image.hh"
 
 #include <GL/glew.h>
 
@@ -16,18 +16,18 @@ Texture::~Texture() {
   clear();
 }
 
-void Texture::set_image(Image* image) {
+void Texture::set_image(image* img) {
   clear();
-  m_images.push_back(image);
+  m_images.push_back(img);
 }
 
-void Texture::set_image(unsigned int index, Image* image) {
+void Texture::set_image(unsigned int index, image* img) {
   if(index >= m_images.size()) {
     log_warning << "Illegal argument to Texture::set_image(): " << index << endl;
     return;
   }
   if(m_images[index] != NULL) delete m_images[index];
-  m_images[index] = image;
+  m_images[index] = img;
 }
 
 void Texture::set_num_images(int count) {

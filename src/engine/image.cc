@@ -1,13 +1,18 @@
-#include "image.hpp"
-#include "../misc/log.hpp"
+#include "image.hh"
 #include <fstream>
-#include <cstring>
-#include "../../engine/utils.hh"
+#include "utils.hh"
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wduplicated-branches"
+#pragma GCC diagnostic ignored "-Wdouble-promotion"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_FAILURE_USERMSG
-#include "../../thirdparty/stb_image.h"
+#include "../thirdparty/stb_image.h"
+#pragma GCC diagnostic pop
 
-void Image::_create_empty() {
+void image::_create_empty() {
   if (_pixels)
     free(_pixels);
   _width = 256;
@@ -17,13 +22,13 @@ void Image::_create_empty() {
 
   // not using `new' for same deallocation api with stb_image (free())
   _pixels = (unsigned char*)malloc(_width * _height * pd_byte);
-  for (unsigned i = 0; i < 3; ++i)
-    for (unsigned y = 0; y < _height; ++y)
-      for (unsigned x = 0; x < _width; ++x)
+  for (int i = 0; i < 3; ++i)
+    for (int y = 0; y < _height; ++y)
+      for (int x = 0; x < _width; ++x)
         _pixels[y * _width * pd_byte + x * pd_byte + i] = x ^ y;
 }
 
-bool Image::_load_from_file(const std::string &filename) {
+bool image::_load_from_file(const std::string &filename) {
   std::string real_filename;
   std::ifstream existence_check_fs(filename, std::ios::binary);
   if (!existence_check_fs) {
@@ -62,7 +67,7 @@ bool Image::_load_from_file(const std::string &filename) {
   return true;
 }
 
-Image::Image(const std::string &filename) {
+image::image(const std::string &filename) {
   _pixels = nullptr;
   _width = _height = 0;
   _type = image_type::undefined;
@@ -74,24 +79,24 @@ Image::Image(const std::string &filename) {
   }
 }
 
-Image::~Image() {
+image::~image() {
   if (_pixels)
     free(_pixels);
 }
 
-unsigned int Image::get_width() {
+unsigned int image::get_width() {
   return _width;
 }
 
-unsigned int Image::get_height() {
+unsigned int image::get_height() {
   return _height;
 }
 
-unsigned char* Image::get_pixels() {
+unsigned char* image::get_pixels() {
   return _pixels;
 }
 
-image_type Image::get_image_type() {
+image_type image::get_image_type() {
   return _type;
 }
 

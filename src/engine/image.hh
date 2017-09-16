@@ -6,7 +6,7 @@ enum class image_type {
   undefined, rgb, rgba, grayscale
 };
 
-class Image {
+class image {
   unsigned char *_pixels;
   int _width;
   int _height;
@@ -17,9 +17,9 @@ class Image {
 public:
   std::string fail_reason;
 
-  Image();
-  Image(const std::string &filename);
-  ~Image();
+  image();
+  image(const std::string &filename);
+  ~image();
 
   unsigned int get_width();
   unsigned int get_height();
