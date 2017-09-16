@@ -10,19 +10,17 @@
 void Image::_create_empty() {
   if (_pixels)
     free(_pixels);
-  _width = 64;
-  _height = 64;
+  _width = 256;
+  _height = 256;
   _type = image_type::rgb;
-  unsigned int pixel_depth = 24, pixel_depth_byte = pixel_depth / 8;
+  unsigned int pixel_depth = 24, pd_byte = pixel_depth / 8;
 
   // not using `new' for same deallocation api with stb_image (free())
-  _pixels = (unsigned char*)malloc(_width * _height * pixel_depth_byte);
-  memset(_pixels, 255, _width * _height * pixel_depth_byte);
-  memset(_pixels, 0, _width * pixel_depth_byte); // top line
-  for (unsigned int i = 0; i < _height; ++i) // left line
-    _pixels[i * _width * pixel_depth_byte]
-      = _pixels[i * _width * pixel_depth_byte + 1]
-      = _pixels[i * _width * pixel_depth_byte + 2] = 0;
+  _pixels = (unsigned char*)malloc(_width * _height * pd_byte);
+  for (unsigned i = 0; i < 3; ++i)
+    for (unsigned y = 0; y < _height; ++y)
+      for (unsigned x = 0; x < _width; ++x)
+        _pixels[y * _width * pd_byte + x * pd_byte + i] = x ^ y;
 }
 
 bool Image::_load_from_file(const std::string &filename) {
