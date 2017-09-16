@@ -4,7 +4,6 @@
 
 #include "../d3c/misc/log.hpp"
 #include "../d3c/model/batch.hpp"
-#include "../d3c/scene/camera.hpp"
 #include "../d3c/scene/scene_portal.hpp"
 #include "../d3c/physics/collision_set_bsp.hpp"
 
@@ -14,7 +13,6 @@
 screen *g_screen = new screen("qeikke", 800, 600);
 
 Renderer* renderer = (Renderer*)new Renderer();
-Camera* d3c_cam = new Camera();
 bool use_collision = true;
 bool tree_debug = false;
 Scene_portal scene;
@@ -50,7 +48,7 @@ static void key_event(char key, bool down) {
 }
 
 static void mouse_motion_event(float xrel, float yrel, int x, int y) {
-  d3c_cam->update_view_angles(xrel, yrel);
+  cam->update_view_angles(xrel, yrel);
 }
 
 static void mouse_button_event(int button, bool down, int x, int y) {
@@ -59,7 +57,7 @@ static void mouse_button_event(int button, bool down, int x, int y) {
 void load() {
   g_screen->lock_mouse();
 
-  d3c_cam->set_position(glm::vec3(100, 100, 50));
+  cam->pos = glm::vec3(100, 50, -100);
 
   renderer->set_viewport(0, 0, 800, 600);
 
@@ -73,9 +71,9 @@ void load() {
 }
 
 static void update(double dt, double t) {
-  glm::vec3 start = d3c_cam->get_position();
-  d3c_cam->update(move, strafe, dt);
-  glm::vec3 end = d3c_cam->get_position();
+  glm::vec3 start = cam->pos;
+  cam->update_position(dt, move, strafe);
+  glm::vec3 end = cam->pos;
 
   if (use_collision) {
     glm::vec3 end_collided = start;
@@ -83,16 +81,16 @@ static void update(double dt, double t) {
       end_collided = end;
       bsp.trace(start, end, 10.0f);
     }
-    d3c_cam->set_position(end_collided);
+    cam->pos = end_collided;
   }
 }
 
 static void draw(double alpha) {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  renderer->set_view(d3c_cam);
+  renderer->set_view(cam);
 
-  scene.render(d3c_cam);
+  scene.render(cam);
 
   renderer->next_frame();
 }

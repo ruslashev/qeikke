@@ -243,20 +243,20 @@ bool Collision_brush::read_from_file(std::ifstream &file) {
   Plane plane;
   for(int i=0; i<num_planes; ++i) {
     plane.normal.x = cm_get_next_float(file);
+    plane.normal.z = -cm_get_next_float(file);
     plane.normal.y = cm_get_next_float(file);
-    plane.normal.z = cm_get_next_float(file);
     plane.d = cm_get_next_float(file);
 
     m_planes[i] = plane;
   }
   // bounding box
   m_min.x = cm_get_next_float(file);
+  m_min.z = -cm_get_next_float(file);
   m_min.y = cm_get_next_float(file);
-  m_min.z = cm_get_next_float(file);
 
   m_max.x = cm_get_next_float(file);
+  m_max.z = -cm_get_next_float(file);
   m_max.y = cm_get_next_float(file);
-  m_max.z = cm_get_next_float(file);
 
   m_solid = cm_get_next_string(file);
 

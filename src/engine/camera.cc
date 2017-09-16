@@ -6,7 +6,8 @@ camera::camera()
   , yaw(0)
   , roll(0)
   , pos(glm::vec3(0, 0, 0))
-  , vel(glm::vec3(0, 0, 0)) {
+  , vel(glm::vec3(0, 0, 0))
+  , speed(150) {
 }
 
 const float sensitivity = 3.f, m_yaw = 0.022, m_pitch = 0.022
@@ -29,11 +30,11 @@ void camera::update_view_angles(float xrel, float yrel) {
 void camera::update_position(double dt, int move, int strafe) {
   const float pitch_rad = glm::radians(pitch), yaw_rad = glm::radians(yaw)
     , perp_yaw = yaw_rad + static_cast<float>(M_PI_2);
-  float dist_move = 5.f * static_cast<float>(move * dt)
-    , dist_strafe = 5.f * static_cast<float>(strafe * dt);
-  if (move == strafe) {
-    dist_move /= sqrtf(2);
-    dist_strafe /= sqrtf(2);
+  float dist_move = speed * static_cast<float>(move * dt)
+    , dist_strafe = speed * static_cast<float>(strafe * dt);
+  if (std::abs(move) == std::abs(strafe)) {
+    dist_move /= sqrtf(2.f);
+    dist_strafe /= sqrtf(2.f);
   }
   pos.x += cosf(yaw_rad) * cosf(pitch_rad) * dist_move
     + cosf(perp_yaw) * dist_strafe;

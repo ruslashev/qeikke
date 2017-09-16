@@ -6,6 +6,7 @@ class camera {
 public:
   float pitch, yaw, roll;
   glm::vec3 pos, vel;
+  float speed;
 
   camera();
   void update_view_angles(float xrel, float yrel);

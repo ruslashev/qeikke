@@ -1,7 +1,6 @@
 #include "renderer.hpp"
 #include "misc/log.hpp"
 #include "model/batch.hpp"
-#include "scene/camera.hpp"
 #include "../engine/screen.hh"
 #include "../engine/shaders.hh"
 #include "../engine/math.hh"
@@ -18,8 +17,8 @@ Renderer::Renderer()
 
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_SCISSOR_TEST);
-  glEnable(GL_CULL_FACE);
-  glCullFace(GL_FRONT);
+  // glEnable(GL_CULL_FACE);
+  // glCullFace(GL_FRONT);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glDepthFunc(GL_LEQUAL);
@@ -92,7 +91,7 @@ void Renderer::set_viewport(const int left, const int top, const int width
   _projection = glm::perspective(glm::radians(45.f)
       , (float)g_screen->get_window_width()
         / (float)g_screen->get_window_height()
-      , 0.1f, 10000.f);
+      , 0.1f, 20000.f);
 
   set_renderport(left, top, width, height);
 }
@@ -102,13 +101,8 @@ void Renderer::set_renderport(const int left, const int top, const int width
   // glScissor(left, top, width, height);
 }
 
-void Renderer::set_view(Camera* camera) {
-  static glm::mat4 mat;
-  const glm::vec3 eye = camera->get_position();
-  mat = glm::mat4(camera->get_orientation());
-
-  _view = glm::mat4() * mat;
-  _view = glm::translate(_view, -eye);
+void Renderer::set_view(camera *cam) {
+  _view = cam->compute_view_mat();
 
   _sp.use_this_prog();
   glm::mat4 mvp = _projection * _view;

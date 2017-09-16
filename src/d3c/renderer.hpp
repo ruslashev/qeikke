@@ -9,9 +9,9 @@
 
 #include "../engine/ogl.hh"
 #include "../engine/texture.hh"
+#include "../engine/camera.hh"
 
 class Batch;
-class Camera;
 
 class Renderer {
   int m_frame;
@@ -43,7 +43,7 @@ public:
       , const int height);
   void set_renderport(const int left, const int top, const int width
       , const int height);
-  void set_view(Camera* camera);
+  void set_view(camera* cam);
 
   unsigned int vertex_pos_attr, texture_coord_attr, vertex_normal_attr;
 };

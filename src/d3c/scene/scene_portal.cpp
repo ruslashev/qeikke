@@ -1,6 +1,5 @@
 #include "scene_portal.hpp"
 #include "../misc/log.hpp"
-#include "camera.hpp"
 #include "../../engine/screen.hh"
 
 #include <string>
@@ -22,9 +21,9 @@ void portal_add_debug_line(glm::ivec2 vec1, glm::ivec2 vec2) {
   portal_debug_lines.push_back(vec2);
 }
 
-void Scene_portal::render(Camera* camera) {
+void Scene_portal::render(camera* cam) {
   // find start area..
-  int start_area = get_area( camera->get_position() );
+  int start_area = get_area( cam->pos );
 
   portal_debug_areas_rendered = 0;
 
@@ -32,18 +31,18 @@ void Scene_portal::render(Camera* camera) {
     // you're in the void!!
     int num_areas = m_areas.size();
     for(int i=0; i<num_areas; ++i) {
-      m_areas[i]->render( camera, glm::ivec2(0, 0), glm::ivec2(g_screen->get_window_width(), g_screen->get_window_height()) );
+      m_areas[i]->render( cam, glm::ivec2(0, 0), glm::ivec2(g_screen->get_window_width(), g_screen->get_window_height()) );
     }
   } else {
     // rename start_area: -1 -> 0, -2 -> 1
     start_area = -1-start_area;
-    m_areas[start_area]->render( camera, glm::ivec2(0, 0), glm::ivec2(g_screen->get_window_width(), g_screen->get_window_height()) );
+    m_areas[start_area]->render( cam, glm::ivec2(0, 0), glm::ivec2(g_screen->get_window_width(), g_screen->get_window_height()) );
   }
 
   renderer->set_renderport(0,0, g_screen->get_window_width(), g_screen->get_window_height());
 }
 
-void Portal_area::render(Camera* camera, glm::ivec2 min, glm::ivec2 max) {
+void Portal_area::render(camera* cam, glm::ivec2 min, glm::ivec2 max) {
   //  hack!!?! only render area once each frame
   if(m_frame_rendered == renderer->get_frame()) {
     return;
@@ -65,16 +64,16 @@ void Portal_area::render(Camera* camera, glm::ivec2 min, glm::ivec2 max) {
   int num_portals = m_portals.size();
 
   for (int j = 0; j < num_portals; ++j) {
-    m_portals[j]->render_from_area( camera, m_index, min, max );
+    m_portals[j]->render_from_area( cam, m_index, min, max );
   }
 }
 
-void Portal_portal::render_from_area(Camera* camera, int index, glm::ivec2 min, glm::ivec2 max) {
+void Portal_portal::render_from_area(camera* cam, int index, glm::ivec2 min, glm::ivec2 max) {
   // check if vertices are projected for visibility check
   if(m_frame_rendered != renderer->get_frame()) {
     m_frame_rendered = renderer->get_frame();
 
-    if( !(m_visible = check_visibility(camera)) ) {
+    if( !(m_visible = check_visibility(cam)) ) {
       // portal is outside frustrum
       return;
     }
@@ -102,9 +101,9 @@ void Portal_portal::render_from_area(Camera* camera, int index, glm::ivec2 min, 
   // render area if visible
   if( (max.x > min.x) && (max.y > min.y) ) {
     if(index == m_area_pos) {
-      m_scene->get_area( m_area_neg )->render( camera, min, max );
+      m_scene->get_area( m_area_neg )->render( cam, min, max );
     } else {
-      m_scene->get_area( m_area_pos )->render( camera, min, max );
+      m_scene->get_area( m_area_pos )->render( cam, min, max );
     }
 
     if(portal_debug) {
@@ -119,7 +118,7 @@ void Portal_portal::render_from_area(Camera* camera, int index, glm::ivec2 min, 
 //==============================================================================
 // 0 = invisible (outside frustrum), 1 = visible, -1 = intersects frontplane
 //==============================================================================
-int Portal_portal::check_visibility(Camera* camera) {
+int Portal_portal::check_visibility(camera* cam) {
   return 1;
 }
 
@@ -244,8 +243,8 @@ void Scene_portal::load_proc(const std::string & name) {
       for(int i=0; i<num_nodes; ++i) {
         Doom3_node node;
         node.plane.normal.x = proc_get_next_float(file);
+        node.plane.normal.z = -proc_get_next_float(file);
         node.plane.normal.y = proc_get_next_float(file);
-        node.plane.normal.z = proc_get_next_float(file);
         node.plane.d = proc_get_next_float(file);
 
         node.pos_child = proc_get_next_int(file);
@@ -281,8 +280,8 @@ void Portal_portal::read_from_file(std::ifstream &file) {
   for(int i=0; i<num_points; ++i) {
     glm::vec3 tmp;
     tmp.x = proc_get_next_float( file );
+    tmp.z = -proc_get_next_float( file );
     tmp.y = proc_get_next_float( file );
-    tmp.z = proc_get_next_float( file );
 
     m_points[i] = tmp;
   }
@@ -324,13 +323,13 @@ void Portal_area::read_from_file(std::ifstream &file) {
 
     for (int j=0; j<num_verts; j++) {
       vertices[j].vertex.x = atof(proc_get_next_value(file).c_str());
+      vertices[j].vertex.z = -atof(proc_get_next_value(file).c_str());
       vertices[j].vertex.y = atof(proc_get_next_value(file).c_str());
-      vertices[j].vertex.z = atof(proc_get_next_value(file).c_str());
       vertices[j].texcoord.x = atof(proc_get_next_value(file).c_str());
       vertices[j].texcoord.y = atof(proc_get_next_value(file).c_str());
       vertices[j].normal.x = atof(proc_get_next_value(file).c_str());
+      vertices[j].normal.z = -atof(proc_get_next_value(file).c_str());
       vertices[j].normal.y = atof(proc_get_next_value(file).c_str());
-      vertices[j].normal.z = atof(proc_get_next_value(file).c_str());
     }
     for (int j = 0; j < num_ind; j++)
       indices[j] = atoi(proc_get_next_value(file).c_str());

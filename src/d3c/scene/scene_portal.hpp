@@ -5,13 +5,13 @@
 #include "../renderer.hpp"
 #include "../../engine/texture.hh"
 #include "../../engine/ogl.hh"
+#include "../../engine/camera.hh"
 
 #include <string>
 #include <vector>
 
 class Portal_portal;
 class Scene_portal;
-class Camera;
 
 struct Doom3_node {
   Plane plane;
@@ -23,7 +23,7 @@ public:
   Portal_area(const std::string & name, int index) : m_name(name), m_index(index) {}
   const std::string & get_name() const { return m_name; }
 
-  void render(Camera* camera, glm::ivec2 min, glm::ivec2 max);
+  void render(camera* cam, glm::ivec2 min, glm::ivec2 max);
 
   void add_portal(Portal_portal *portal) { m_portals.push_back( portal ); }
 
@@ -43,11 +43,11 @@ class Portal_portal {
 public:
   Portal_portal(Scene_portal* scene) : m_frame_rendered(0) { m_scene = scene; }
 
-  void render_from_area(Camera* camera, int index, glm::ivec2 min, glm::ivec2 max);
+  void render_from_area(camera* cam, int index, glm::ivec2 min, glm::ivec2 max);
 
   void read_from_file(std::ifstream &file);
 
-  int  check_visibility(Camera* camera);
+  int  check_visibility(camera* cam);
   void transform_points();
 private:
   Scene_portal* m_scene;
@@ -66,7 +66,7 @@ private:
 
 class Scene_portal {
 public:
-  void render(Camera* camera);
+  void render(camera* cam);
   void load_proc(const std::string & name);
 
   Portal_area * get_area(int i) { return m_areas[i]; }

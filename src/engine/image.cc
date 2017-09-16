@@ -2,13 +2,13 @@
 #include <fstream>
 #include "utils.hh"
 
+#define STB_IMAGE_IMPLEMENTATION
+#define STBI_FAILURE_USERMSG
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wduplicated-branches"
 #pragma GCC diagnostic ignored "-Wdouble-promotion"
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 #pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
-#define STB_IMAGE_IMPLEMENTATION
-#define STBI_FAILURE_USERMSG
 #include "../thirdparty/stb_image.h"
 #pragma GCC diagnostic pop
 
