@@ -20,7 +20,7 @@ struct Plane {
     return (glm::dot(point, normal) + d > 0);
   }
 
-  inline float distance(const glm::vec3 &point) {
+  inline float distance(const glm::vec3 &point) const {
     return glm::dot(point, normal) - d;
   }
 

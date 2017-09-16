@@ -1,6 +1,7 @@
 #include "scene_portal.hpp"
 #include "../misc/log.hpp"
 #include "../../engine/screen.hh"
+#include "../parse_common.hh"
 
 #include <string>
 #include <sstream>
@@ -20,29 +21,6 @@ void portal_add_debug_line(glm::ivec2 vec1, glm::ivec2 vec2) {
   portal_debug_lines.push_back(vec1);
   portal_debug_lines.push_back(vec2);
 }
-
-static std::string proc_get_next_value(std::ifstream &file) {
-  std::string s;
-  while (file >> s) {
-    if (s == "/*") // ignore block comments
-      while (s != "*/")
-        file >> s;
-    else if (s == "{" || s == "}") { // ignore braces and parens for purpose
-    } else if (s == "(" || s == ")") { // of simplifying parsing
-    } else
-      return s;
-  }
-  puts("halt and catch fire");
-  exit(666);
-}
-
-static std::string proc_get_next_string(std::ifstream &file) {
-  std::string s = proc_get_next_value(file);
-  return s.substr(1, s.size() - 2); // strip quotes
-}
-
-#define proc_get_next_float(x) atof(proc_get_next_value(x).c_str())
-#define proc_get_next_int(x) atoi(proc_get_next_value(x).c_str())
 
 Portal_area::Portal_area(const std::string &name, int index)
   : m_name(name)
@@ -83,34 +61,34 @@ void Portal_area::add_portal(Portal_portal *portal) {
 }
 
 void Portal_area::read_from_file(std::ifstream &file) {
-  int num_surfaces = proc_get_next_int(file);
+  int num_surfaces = stream_get_next_int(file);
   for (int i = 0; i < num_surfaces; ++i) {
     std::vector<Vertex_doom3> vertices;
     std::vector<unsigned int> indices;
 
-    std::string name = proc_get_next_string(file) + ".tga";
+    std::string name = stream_get_next_string(file) + ".tga";
 
     texture *tex = renderer->get_texture_from_file(name.c_str());
     m_textures.push_back(tex);
 
-    int num_verts = proc_get_next_int(file);
-    int num_ind = proc_get_next_int(file);
+    int num_verts = stream_get_next_int(file);
+    int num_ind = stream_get_next_int(file);
 
     vertices.resize(num_verts);
     indices.resize(num_ind);
 
     for (int j = 0; j < num_verts; ++j) {
-      vertices[j].vertex.x = atof(proc_get_next_value(file).c_str());
-      vertices[j].vertex.z = -atof(proc_get_next_value(file).c_str());
-      vertices[j].vertex.y = atof(proc_get_next_value(file).c_str());
-      vertices[j].texcoord.x = atof(proc_get_next_value(file).c_str());
-      vertices[j].texcoord.y = atof(proc_get_next_value(file).c_str());
-      vertices[j].normal.x = atof(proc_get_next_value(file).c_str());
-      vertices[j].normal.z = -atof(proc_get_next_value(file).c_str());
-      vertices[j].normal.y = atof(proc_get_next_value(file).c_str());
+      vertices[j].vertex.x = stream_get_next_float(file);
+      vertices[j].vertex.z = -stream_get_next_float(file);
+      vertices[j].vertex.y = stream_get_next_float(file);
+      vertices[j].texcoord.x = stream_get_next_float(file);
+      vertices[j].texcoord.y = stream_get_next_float(file);
+      vertices[j].normal.x = stream_get_next_float(file);
+      vertices[j].normal.z = -stream_get_next_float(file);
+      vertices[j].normal.y = stream_get_next_float(file);
     }
     for (int j = 0; j < num_ind; ++j)
-      indices[j] = atoi(proc_get_next_value(file).c_str());
+      indices[j] = stream_get_next_int(file);
     Batch *batch = new Batch(vertices.data(), vertices.size()
         , sizeof(Vertex_doom3), indices.data(), indices.size()
         , sizeof(unsigned int), renderer->vertex_pos_attr
@@ -170,17 +148,17 @@ void Portal_portal::render_from_area(const camera *cam, int index
 }
 
 void Portal_portal::read_from_file(std::ifstream &file) {
-  int num_points = proc_get_next_int(file);
-  int pos_area = proc_get_next_int(file);
-  int neg_area = proc_get_next_int(file);
+  int num_points = stream_get_next_int(file);
+  int pos_area = stream_get_next_int(file);
+  int neg_area = stream_get_next_int(file);
 
   m_points.resize(num_points);
   m_transformed_points.resize(num_points);
 
   for (int i = 0; i < num_points; ++i) {
-    m_points[i].x = proc_get_next_float(file);
-    m_points[i].z = -proc_get_next_float(file);
-    m_points[i].y = proc_get_next_float(file);
+    m_points[i].x = stream_get_next_float(file);
+    m_points[i].z = -stream_get_next_float(file);
+    m_points[i].y = stream_get_next_float(file);
   }
 
   m_area_pos = m_scene->get_area_index_by_name("_area"
@@ -250,13 +228,13 @@ void Scene_portal::load_proc(const std::string &name) {
   std::string s;
   while (file >> s) {
     if (s == "model") { // areas
-      std::string name = proc_get_next_string(file);
+      std::string name = stream_get_next_string(file);
       Portal_area *portal_area = new Portal_area(name, m_areas.size());
       portal_area->read_from_file(file);
       m_areas.push_back(portal_area);
     } else if (s == "interAreaPortals") { // portals
-      int num_areas = proc_get_next_int(file);
-      int num_portals = proc_get_next_int(file);
+      int num_areas = stream_get_next_int(file);
+      int num_portals = stream_get_next_int(file);
       m_portals.resize(num_portals);
       for (int i = 0; i < num_portals; ++i) {
         Portal_portal *portal_portal = new Portal_portal(this);
@@ -264,16 +242,16 @@ void Scene_portal::load_proc(const std::string &name) {
         m_portals[i] = portal_portal;
       }
     } else if (s == "nodes") { // nodes
-      int num_nodes = proc_get_next_int(file);
+      int num_nodes = stream_get_next_int(file);
       m_nodes.resize(num_nodes);
       for (int i = 0; i < num_nodes; ++i) {
         Doom3_node node;
-        node.plane.normal.x = proc_get_next_float(file);
-        node.plane.normal.z = -proc_get_next_float(file);
-        node.plane.normal.y = proc_get_next_float(file);
-        node.plane.d = proc_get_next_float(file);
-        node.pos_child = proc_get_next_int(file);
-        node.neg_child = proc_get_next_int(file);
+        node.plane.normal.x = stream_get_next_float(file);
+        node.plane.normal.z = -stream_get_next_float(file);
+        node.plane.normal.y = stream_get_next_float(file);
+        node.plane.d = stream_get_next_float(file);
+        node.pos_child = stream_get_next_int(file);
+        node.neg_child = stream_get_next_int(file);
         if (node.pos_child < 0)
           node.pos_child = -1 - get_area_index_by_name("_area"
               + std::to_string(-1 - node.pos_child));
