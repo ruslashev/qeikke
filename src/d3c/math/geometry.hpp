@@ -16,7 +16,7 @@ struct Plane {
     d *= inv_length;
   }
 
-  inline bool is_in_front(const glm::vec3 &point) {
+  inline bool is_in_front(const glm::vec3 &point) const {
     return (glm::dot(point, normal) + d > 0);
   }
 

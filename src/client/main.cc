@@ -91,8 +91,6 @@ static void draw(double alpha) {
   renderer->set_view(cam);
 
   scene.render(cam);
-
-  renderer->next_frame();
 }
 
 static void cleanup() {

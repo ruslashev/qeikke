@@ -11,8 +11,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 Renderer::Renderer()
-  : m_frame(0)
-  , _sp(shaders::map_vert, shaders::map_frag) {
+  : _sp(shaders::map_vert, shaders::map_frag) {
   glClearColor(0, 0, 0, 1);
 
   glEnable(GL_DEPTH_TEST);

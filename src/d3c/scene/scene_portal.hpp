@@ -19,37 +19,23 @@ struct Doom3_node {
 };
 
 class Portal_area {
-public:
-  Portal_area(const std::string & name, int index) : m_name(name), m_index(index) {}
-  const std::string & get_name() const { return m_name; }
-
-  void render(camera* cam, glm::ivec2 min, glm::ivec2 max);
-
-  void add_portal(Portal_portal *portal) { m_portals.push_back( portal ); }
-
-  void read_from_file(std::ifstream &file);
-private:
   std::string m_name;
   int m_index;
 
-  std::vector<texture *> m_textures;
-  std::vector<Batch *> m_batches;
-  std::vector<Portal_portal *> m_portals;
+  std::vector<texture*> m_textures;
+  std::vector<Batch*> m_batches;
+  std::vector<Portal_portal*> m_portals;
 
-  int m_frame_rendered;
+  unsigned long long m_frame_rendered;
+public:
+  Portal_area(const std::string &name, int index) : m_name(name), m_index(index) {}
+  const std::string &get_name() const { return m_name; }
+  void render(camera *cam, glm::ivec2 min, glm::ivec2 max);
+  void add_portal(Portal_portal *portal) { m_portals.push_back( portal ); }
+  void read_from_file(std::ifstream &file);
 };
 
 class Portal_portal {
-public:
-  Portal_portal(Scene_portal* scene) : m_frame_rendered(0) { m_scene = scene; }
-
-  void render_from_area(camera* cam, int index, glm::ivec2 min, glm::ivec2 max);
-
-  void read_from_file(std::ifstream &file);
-
-  int  check_visibility(camera* cam);
-  void transform_points();
-private:
   Scene_portal* m_scene;
 
   glm::ivec2 m_transformed_min;
@@ -60,25 +46,27 @@ private:
   int m_area_pos;
   int m_area_neg;
 
-  int m_frame_rendered;
+  unsigned long long m_frame_rendered;
   int m_visible;
+public:
+  Portal_portal(Scene_portal *scene) : m_frame_rendered(0) { m_scene = scene; }
+  void render_from_area(camera *cam, int index, glm::ivec2 min, glm::ivec2 max);
+  void read_from_file(std::ifstream &file);
+  int check_visibility(camera *cam);
+  void transform_points();
 };
 
 class Scene_portal {
-public:
-  void render(camera* cam);
-  void load_proc(const std::string & name);
-
-  Portal_area * get_area(int i) { return m_areas[i]; }
-  int get_area(const glm::vec3 & position);
-
-  int get_area_index_by_name(const std::string & name);
-private:
-  std::vector<Portal_area *> m_areas;
-  std::vector<Portal_portal *> m_portals;
+  std::vector<Portal_area*> m_areas;
+  std::vector<Portal_portal*> m_portals;
   std::vector<Doom3_node> m_nodes;
-
-  // shader_program _sp;
+public:
+  ~Scene_portal();
+  void render(camera *cam);
+  void load_proc(const std::string &name);
+  Portal_area* get_area(int i) { return m_areas[i]; }
+  int get_area(const glm::vec3 &position);
+  int get_area_index_by_name(const std::string & name);
 };
 
 extern bool portal_debug;

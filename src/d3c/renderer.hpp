@@ -14,7 +14,6 @@
 class Batch;
 
 class Renderer {
-  int m_frame;
   std::map<std::string, texture*> m_texture_map;
 
   glm::mat4 _projection, _view;
@@ -35,9 +34,6 @@ public:
 
   const glm::mat4 & get_modelview_matrix()  { return _view; }
   const glm::mat4 & get_projection_matrix() { return _projection; }
-
-  inline int get_frame() { return m_frame; }
-  void next_frame() { m_frame++; }
 
   void set_viewport(const int left, const int top, const int width
       , const int height);
