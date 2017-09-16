@@ -63,7 +63,7 @@ void load() {
 
   renderer->set_viewport(0, 0, 800, 600);
 
-  std::string name = "level";
+  std::string name = "data/maps/level/level";
 
   scene.load_proc(name + ".proc");
 

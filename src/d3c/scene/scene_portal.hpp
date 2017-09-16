@@ -67,8 +67,6 @@ private:
 
 class Scene_portal {
 public:
-  Scene_portal();
-
   void render(Camera* camera);
   void load_proc(const std::string & name);
 

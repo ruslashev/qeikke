@@ -211,22 +211,11 @@ inline std::string proc_get_next_string(std::ifstream & file) {
 #define proc_get_next_float(x) atof( proc_get_next_value(x).c_str() )
 #define proc_get_next_int(x) atoi( proc_get_next_value(x).c_str() )
 
-Scene_portal::Scene_portal()
-  // : _sp()
-{
-}
-
 void Scene_portal::load_proc(const std::string & name) {
-  log_function << "Load " << name << " in Scene_portal::load_proc()" << endl;
-
   std::ifstream file(name.c_str());
+  assertf(file, "unable to open \"%s\"", name.c_str());
+
   std::string s;
-
-  if(!file) {
-    log_error << "unable to open " << name << endl;
-    return;
-  }
-
   while( file >> s) {
     if(s == "model") {
       // areas
@@ -239,8 +228,6 @@ void Scene_portal::load_proc(const std::string & name) {
       int num_areas   = proc_get_next_int(file);
       int num_portals = proc_get_next_int(file);
 
-      log_debug << "load " << num_portals << " portals" << endl;
-
       m_portals.resize(num_portals);
 
       for(int i=0; i<num_portals; ++i) {
@@ -251,8 +238,6 @@ void Scene_portal::load_proc(const std::string & name) {
     } else if (s == "nodes") {
       // nodes
       int num_nodes = proc_get_next_int(file);
-
-      log_debug << "load " << num_nodes << " nodes" << endl;
 
       m_nodes.resize(num_nodes);
 
@@ -283,8 +268,6 @@ void Scene_portal::load_proc(const std::string & name) {
     }
   }
   file.close();
-
-  log_success << name << " loaded succesfully " << endl;
 }
 
 void Portal_portal::read_from_file(std::ifstream &file) {
@@ -320,10 +303,8 @@ void Portal_portal::read_from_file(std::ifstream &file) {
 }
 
 void Portal_area::read_from_file(std::ifstream &file) {
-  log_function << "Load area (model) " << m_name << " in Portal_area::read_from_file()" << endl;
   // read num surfaces;
   int num_surfaces = proc_get_next_int(file);
-  log_debug << num_surfaces << " surface(s)" << endl;
 
   for(int i=0; i<num_surfaces; i++) {
     std::vector<Vertex_doom3> vertices;
@@ -353,14 +334,11 @@ void Portal_area::read_from_file(std::ifstream &file) {
     }
     for (int j = 0; j < num_ind; j++)
       indices[j] = atoi(proc_get_next_value(file).c_str());
-    log_debug << "surface, num_of_verts: " << vertices.size()
-      << ", num_of_indices: " << indices.size() << endl;
     Batch *batch = new Batch(vertices.data(), vertices.size()
         , sizeof(Vertex_doom3), indices.data(), indices.size()
         , sizeof(unsigned int), renderer->vertex_pos_attr
         , renderer->texture_coord_attr, renderer->vertex_normal_attr);
     m_batches.push_back(batch);
   }
-  log_success << m_name << " loaded succesfully " << endl;
 }
 

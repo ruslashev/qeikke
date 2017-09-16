@@ -1,8 +1,8 @@
 #include "image.hpp"
 #include "../misc/log.hpp"
-
 #include <fstream>
 #include <cstring>
+#include "../../engine/utils.hh"
 
 static int TGAReadError = 0;
 
@@ -44,17 +44,22 @@ Image::~Image() {
 }
 
 bool Image::load_form_file(const std::string &filename) {
-  log_init_multiple << "Load " << filename << " in Image::load_from_file()" << endl;
-
-  if (m_loaded) {
+  if (m_loaded)
     clear();
-  }
   m_loaded = false;
 
   std::ifstream file;
   file.open(filename.c_str(), std::ios::binary);
-  if (!file.is_open()) {
-    return false;
+  if (!file) {
+    // this branch exists because levels that came with the doom3_collision
+    // have texture paths "../data/textures/*". but since files were moved
+    // around, they should actually be "data/textures/*".
+    std::string transformed_filename = filename;
+    transformed_filename.erase(transformed_filename.begin()
+        , transformed_filename.begin() + 3);
+    file.open(transformed_filename.c_str(), std::ios::binary);
+    if (!file)
+      die("failed to open file \"%s\"", filename.c_str());
   }
 
   bool rle = false;

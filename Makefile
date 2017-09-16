@@ -27,10 +27,8 @@ $(shell mkdir -p .objs/d3c/material >/dev/null)
 $(shell mkdir -p .objs/d3c/model >/dev/null)
 $(shell mkdir -p .objs/d3c/renderer_opengl >/dev/null)
 
-# TODO: introduced in porting doom3_collision
 all: $(BIN)
-	mv qeikke res
-	cd res && ./qeikke
+	./qeikke
 
 $(BIN): $(OBJS)
 	@echo "Linking to $@"
