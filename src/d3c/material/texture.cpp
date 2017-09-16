@@ -66,16 +66,16 @@ bool Texture::upload_texture() {
 
   GLuint format;
   switch (m_images[0]->get_image_type()) {
-    case Image::RGB:       format = GL_RGB;   break;
-    case Image::RGBA:      format = GL_RGBA;  break;
-    case Image::GREYSCALE: format = GL_ALPHA; break;
-    default:               format = GL_RGB;   break;
+    case image_type::rgb:       format = GL_RGB;   break;
+    case image_type::rgba:      format = GL_RGBA;  break;
+    case image_type::grayscale: format = GL_ALPHA; break;
+    default:                    format = GL_RGB;   break;
   }
 
   glBindTexture(GL_TEXTURE_2D, _id);
 
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGB, m_images[0]->get_image_width()
-      , m_images[0]->get_image_height(), 0, format, GL_UNSIGNED_BYTE
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGB, m_images[0]->get_width()
+      , m_images[0]->get_height(), 0, format, GL_UNSIGNED_BYTE
       , m_images[0]->get_pixels());
 
   glGenerateMipmap(GL_TEXTURE_2D);

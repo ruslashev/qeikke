@@ -42,13 +42,7 @@ Texture* Renderer::get_texture_from_file(const std::string & name) {
       << " found in m_texture_map in Renderer::get_texture_from_file()" << endl;
     return m_texture_map[name];
   }
-  Image *image = new Image();
-
-  // todo, create an 'file not found' default texture;
-  if (!image->load_form_file(name)) {
-    log_error << "unable to load image: " << name << endl;
-    image->create_empty();
-  }
+  Image *image = new Image(name);
 
   Texture *texture = create_texture(name);
   texture->set_image(image);
