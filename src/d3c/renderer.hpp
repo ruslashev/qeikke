@@ -17,7 +17,7 @@ class Renderer {
   std::map<std::string, texture*> m_texture_map;
 
   glm::mat4 _projection, _view;
-  int m_viewport[4];
+  float _viewport_width, _viewport_height;
 
   shader_program _sp;
   unsigned int _mvp_unif, _texture_sampler_unif;
@@ -36,8 +36,7 @@ public:
   const glm::mat4 & get_modelview_matrix()  { return _view; }
   const glm::mat4 & get_projection_matrix() { return _projection; }
 
-  void set_viewport(const int left, const int top, const int width
-      , const int height);
+  void set_viewport(int left, int top, int width, int height);
   void set_renderport(const int left, const int top, const int width
       , const int height);
   void set_view(camera* cam);

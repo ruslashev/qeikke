@@ -57,6 +57,7 @@ void screen::mainloop(void (*load_cb)(void)
     , void (*key_event_cb)(char, bool)
     , void (*mouse_motion_event_cb)(float, float, int, int)
     , void (*mouse_button_event_cb)(int, bool, int, int)
+    , void (*window_resize_event_cb)(int, int)
     , void (*update_cb)(double, double)
     , void (*draw_cb)(double)
     , void (*cleanup_cb)(void)) {
@@ -69,6 +70,8 @@ void screen::mainloop(void (*load_cb)(void)
 
   int draw_count = 0;
 
+  window_resize_event_cb(_window_width, _window_height);
+
   while (running) {
     double real_time = get_time_in_seconds()
       , elapsed = real_time - current_time;
@@ -80,30 +83,45 @@ void screen::mainloop(void (*load_cb)(void)
       { // events
         SDL_Event sdl_event;
         while (SDL_PollEvent(&sdl_event) != 0)
-          if (sdl_event.type == SDL_QUIT)
-            running = false;
-          else if ((sdl_event.type == SDL_KEYDOWN || sdl_event.type == SDL_KEYUP)
-              && sdl_event.key.repeat == 0) {
-            const char key_info = sdlkey_to_char(sdl_event.key.keysym.sym);
-            if (key_info != -1)
-              key_event_cb(key_info, sdl_event.type == SDL_KEYDOWN);
-          } else if (sdl_event.type == SDL_MOUSEMOTION)
-            mouse_motion_event_cb(static_cast<float>(sdl_event.motion.xrel)
-                , static_cast<float>(sdl_event.motion.yrel), sdl_event.motion.x
-                , sdl_event.motion.y);
-          else if (sdl_event.type == SDL_MOUSEBUTTONDOWN
-              || sdl_event.type == SDL_MOUSEBUTTONUP) {
-            int button;
-            switch (sdl_event.button.button) {
-              case SDL_BUTTON_LEFT:   button = 1; break;
-              case SDL_BUTTON_MIDDLE: button = 2; break;
-              case SDL_BUTTON_RIGHT:  button = 3; break;
-              case SDL_BUTTON_X1:     button = 4; break;
-              case SDL_BUTTON_X2:     button = 5; break;
-              default:                button = -1;
-            }
-            mouse_button_event_cb(button, sdl_event.type == SDL_MOUSEBUTTONDOWN
-                , sdl_event.motion.x, sdl_event.motion.y);
+          switch (sdl_event.type) {
+            case SDL_QUIT:
+              running = false;
+              break;
+            case SDL_KEYDOWN:
+            case SDL_KEYUP:
+              if (sdl_event.key.repeat == 0) {
+                const char key_info = sdlkey_to_char(sdl_event.key.keysym.sym);
+                if (key_info != -1)
+                  key_event_cb(key_info, sdl_event.type == SDL_KEYDOWN);
+              }
+              break;
+            case SDL_MOUSEMOTION:
+              mouse_motion_event_cb(sdl_event.motion.xrel
+                  , sdl_event.motion.yrel, sdl_event.motion.x
+                  , sdl_event.motion.y);
+              break;
+            case SDL_MOUSEBUTTONDOWN:
+            case SDL_MOUSEBUTTONUP:
+              int button;
+              switch (sdl_event.button.button) {
+                case SDL_BUTTON_LEFT:   button = 1; break;
+                case SDL_BUTTON_MIDDLE: button = 2; break;
+                case SDL_BUTTON_RIGHT:  button = 3; break;
+                case SDL_BUTTON_X1:     button = 4; break;
+                case SDL_BUTTON_X2:     button = 5; break;
+                default:                button = -1;
+              }
+              mouse_button_event_cb(button
+                  , sdl_event.type == SDL_MOUSEBUTTONDOWN, sdl_event.motion.x
+                  , sdl_event.motion.y);
+              break;
+            case SDL_WINDOWEVENT_RESIZED:
+              _window_width = sdl_event.window.data1;
+              _window_height = sdl_event.window.data2;
+              window_resize_event_cb(_window_width, _window_height);
+              break;
+            default:
+              break;
           }
       }
 

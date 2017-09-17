@@ -52,12 +52,14 @@ static void mouse_motion_event(float xrel, float yrel, int x, int y) {
 static void mouse_button_event(int button, bool down, int x, int y) {
 }
 
-void load() {
+static void window_resize_event(int width, int height) {
+  renderer->set_viewport(0, 0, width, height);
+}
+
+static void load() {
   g_screen->lock_mouse();
 
   cam->pos = glm::vec3(100, 50, -100);
-
-  renderer->set_viewport(0, 0, 800, 600);
 
   std::string name = "data/maps/level/level";
 
@@ -99,6 +101,6 @@ static void cleanup() {
 
 int main() {
   g_screen->mainloop(load, key_event, mouse_motion_event, mouse_button_event
-      , update, draw, cleanup);
+      , window_resize_event, update, draw, cleanup);
 }
 

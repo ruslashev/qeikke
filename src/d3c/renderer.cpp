@@ -66,28 +66,26 @@ bool Renderer::project(glm::vec3 vec, int &x, int &y) {
 }
 
 bool Renderer::project(glm::vec4 vec, int &x, int &y) {
-  vec = _projection * (_view * vec);
+  vec = _projection * _view * vec;
 
   if (feq(vec.w, 0)) {
     x = y = 0;
     return false;
   }
 
-  vec.x /= vec.w;
-  vec.y /= vec.w;
+  vec.x = (vec.x / vec.w) * 0.5f;
+  vec.y = (vec.y / vec.w) * 0.5f;
 
-  vec.x *= 0.5f;
-  vec.y *= 0.5f;
-
-  x = (int)((vec.x + 0.5f) * (float)m_viewport[2]);
-  y = (int)((vec.y + 0.5f) * (float)m_viewport[3]);
+  x = (int)((vec.x + 0.5f) * _viewport_width);
+  y = (int)((vec.y + 0.5f) * _viewport_height);
 
   return true;
 }
 
-void Renderer::set_viewport(const int left, const int top, const int width
-    , const int height) {
+void Renderer::set_viewport(int left, int top, int width, int height) {
   glViewport(left, top, width, height);
+  _viewport_width = width;
+  _viewport_height = height;
 
   _projection = glm::perspective(glm::radians(45.f)
       , (float)g_screen->get_window_width()
@@ -109,8 +107,6 @@ void Renderer::set_view(camera *cam) {
   glm::mat4 mvp = _projection * _view;
   glUniformMatrix4fv(_mvp_unif, 1, GL_FALSE, glm::value_ptr(mvp));
   glUniform1i(_texture_sampler_unif, 0);
-
-  glGetIntegerv(GL_VIEWPORT, m_viewport);
 
   // update frustum of camera
   // camera->update_frustum();

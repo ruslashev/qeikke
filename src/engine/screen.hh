@@ -21,6 +21,7 @@ public:
       , void (*key_event_cb)(char, bool)
       , void (*mouse_motion_event_cb)(float, float, int, int)
       , void (*mouse_button_event_cb)(int, bool, int, int)
+      , void (*window_resize_event_cb)(int, int)
       , void (*update_cb)(double, double)
       , void (*draw_cb)(double)
       , void (*cleanup_cb)(void));
