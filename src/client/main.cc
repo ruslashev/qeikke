@@ -12,9 +12,8 @@
 
 screen *g_screen = new screen("qeikke", 800, 600);
 
-Renderer* renderer = (Renderer*)new Renderer();
-bool use_collision = true;
-bool tree_debug = false;
+Renderer *renderer = new Renderer();
+bool use_collision = true, tree_debug = false;
 Scene_portal scene;
 Collision_set_bsp bsp;
 
@@ -93,6 +92,9 @@ static void draw(double alpha) {
 }
 
 static void cleanup() {
+  delete cam;
+  delete renderer;
+  delete g_screen;
 }
 
 int main() {

@@ -10,10 +10,10 @@ class texture {
 public:
   std::string fail_reason;
 
-  texture(const std::string &name);
+  texture();
   ~texture();
   unsigned int get_id() const;
-  void set_image(image* img);
+  void set_image(image *img);
   bool upload_texture();
 };
 

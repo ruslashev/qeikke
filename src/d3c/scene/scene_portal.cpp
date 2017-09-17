@@ -4,7 +4,6 @@
 #include "../parse_common.hh"
 
 #include <string>
-#include <sstream>
 #include <iostream>
 
 struct Vertex_doom3 {
@@ -39,9 +38,10 @@ const std::string& Portal_area::get_name() const {
 
 void Portal_area::render(const camera *cam, const glm::ivec2 &min
     , const glm::ivec2 &max) {
-  if (m_frame_rendered == g_screen->get_frame_idx())
+  unsigned long long this_frame = g_screen->get_frame_idx();
+  if (m_frame_rendered == this_frame)
     return;
-  m_frame_rendered = g_screen->get_frame_idx();
+  m_frame_rendered = this_frame;
   ++portal_debug_areas_rendered;
 
   // set renderport, prevent visible 'rounding-error' caps

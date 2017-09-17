@@ -32,12 +32,14 @@ Renderer::Renderer()
   _texture_sampler_unif = _sp.bind_uniform("texture_sampler");
 }
 
+Renderer::~Renderer() {
+  for (auto it = m_texture_map.begin(); it != m_texture_map.end(); ++it)
+    delete it->second;
+}
+
 texture* Renderer::get_texture_from_file(const std::string & name) {
-  if (m_texture_map.find(name) != m_texture_map.end()) {
-    log_debug_multiple << name
-      << " found in m_texture_map in Renderer::get_texture_from_file()" << endl;
+  if (m_texture_map.find(name) != m_texture_map.end())
     return m_texture_map[name];
-  }
   image *img = new image(name);
 
   texture *tex = create_texture(name);
@@ -47,7 +49,7 @@ texture* Renderer::get_texture_from_file(const std::string & name) {
 }
 
 texture* Renderer::create_texture(const std::string & name) {
-  texture* tex = new texture(name);
+  texture *tex = new texture();
   m_texture_map[name] = tex;
   return tex;
 }

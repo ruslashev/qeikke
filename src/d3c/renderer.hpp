@@ -23,6 +23,7 @@ class Renderer {
   unsigned int _mvp_unif, _texture_sampler_unif;
 public:
   Renderer();
+  ~Renderer();
 
   texture* get_texture_from_file(const std::string & name);
   texture* create_texture(const std::string & name);

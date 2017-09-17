@@ -4,7 +4,7 @@
 
 #include <GL/glew.h>
 
-texture::texture(const std::string &name)
+texture::texture()
   : _id(0)
   , _image(nullptr)
   , fail_reason("") {
