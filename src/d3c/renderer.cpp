@@ -61,23 +61,21 @@ void Renderer::upload_textures() {
           , it->second->fail_reason.c_str());
 }
 
-bool Renderer::project(glm::vec3 vec, int &x, int &y) {
-  return project(glm::vec4(vec.x, vec.y, vec.z, 1.f), x, y);
-}
+bool Renderer::project(const glm::vec3 &vec, int &x, int &y) {
+  glm::vec4 out = _projection * _view * glm::vec4(vec, 1.f);
 
-bool Renderer::project(glm::vec4 vec, int &x, int &y) {
-  vec = _projection * _view * vec;
-
-  if (feq(vec.w, 0)) {
+  if (out.w <= 0.f) {
     x = y = 0;
     return false;
   }
 
-  vec.x = (vec.x / vec.w) * 0.5f;
-  vec.y = (vec.y / vec.w) * 0.5f;
+  out /= out.w;
 
-  x = (int)((vec.x + 0.5f) * _viewport_width);
-  y = (int)((vec.y + 0.5f) * _viewport_height);
+  out.x = out.x * 0.5f + 0.5f;
+  out.y = out.y * 0.5f + 0.5f;
+
+  x = out.x * _viewport_width;
+  y = out.y * _viewport_height;
 
   return true;
 }

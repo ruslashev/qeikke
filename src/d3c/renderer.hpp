@@ -29,9 +29,7 @@ public:
   texture* create_texture(const std::string & name);
   void upload_textures();
 
-  // unproject
-  bool project(glm::vec3 vec, int &x, int &y);
-  bool project(glm::vec4 vec, int &x, int &y);
+  bool project(const glm::vec3 &vec, int &x, int &y);
 
   const glm::mat4 & get_modelview_matrix()  { return _view; }
   const glm::mat4 & get_projection_matrix() { return _projection; }
