@@ -18,7 +18,6 @@ bool tree_debug = false;
 Scene_portal scene;
 Collision_set_bsp bsp;
 
-float fov = 45.f;
 camera *cam = new camera();
 int move = 0, strafe = 0;
 bool wireframe = false;

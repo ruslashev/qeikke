@@ -22,8 +22,8 @@ class Portal_area {
   std::string m_name;
   int m_index;
 
-  std::vector<texture*> m_textures;
-  std::vector<Batch*> m_batches;
+  std::vector<const texture*> m_textures;
+  std::vector<const Batch*> m_batches;
   std::vector<Portal_portal*> m_portals;
 
   unsigned long long m_frame_rendered;

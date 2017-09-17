@@ -45,6 +45,3 @@ public:
   void load_cm(const std::string &name);
 };
 
-extern bool bsp_debug;
-extern std::vector<const Collision_brush*> debug_bsp_collision_brushes;
-

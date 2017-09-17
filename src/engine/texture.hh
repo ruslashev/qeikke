@@ -12,7 +12,7 @@ public:
 
   texture(const std::string &name);
   ~texture();
-  unsigned int get_id();
+  unsigned int get_id() const;
   void set_image(image* img);
   bool upload_texture();
 };

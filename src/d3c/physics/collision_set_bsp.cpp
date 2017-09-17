@@ -11,9 +11,6 @@
 
 #define EPSILON 0.001f
 
-std::vector<const Collision_brush*> debug_bsp_collision_brushes;
-bool bsp_debug;
-
 Kd_tree_node::Kd_tree_node()
   : child_front(nullptr)
   , child_back(nullptr) {
@@ -41,9 +38,9 @@ void Kd_tree_node::insert_brush(const Collision_brush *brush) {
   if (index >= 0) { // have children, find the right child for the brush
     // very fast plane check
     if (brush->m_min[index] >= distance && brush->m_max[index] >= distance)
-      child_front->insert_brush( brush );
+      child_front->insert_brush(brush);
     else if (brush->m_min[index] <= distance && brush->m_max[index] <= distance)
-      child_back->insert_brush( brush );
+      child_back->insert_brush(brush);
     else {
       // plane interstects brush
       // m_brushes.push_back(brush); (insert in both children!!
@@ -56,11 +53,8 @@ void Kd_tree_node::insert_brush(const Collision_brush *brush) {
 
 void Kd_tree_node::trace(const glm::vec3 &start, glm::vec3 &end, float radius) {
   // walk through the tree to find brushes
-  for (size_t i = 0; i < m_brushes.size(); ++i) {
+  for (size_t i = 0; i < m_brushes.size(); ++i)
     m_brushes[i]->trace(start, end, radius, end);
-    if (bsp_debug)
-      debug_bsp_collision_brushes.push_back(m_brushes[i]);
-  }
 
   if (index >= 0) {
     if (start[index] >= distance + radius && end[index] >= distance + radius)
@@ -183,7 +177,7 @@ void Collision_set_bsp::load_cm(const std::string &name) {
       }
       delete brush;
       break; // hack, only load first collision model
-    } else if( s == "nodes") {
+    } else if (s == "nodes") {
       m_kd_tree = new Kd_tree_node();
       m_kd_tree->read_from_file(file);
     }

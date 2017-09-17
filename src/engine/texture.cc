@@ -15,7 +15,7 @@ texture::~texture() {
     delete _image;
 }
 
-unsigned int texture::get_id() {
+unsigned int texture::get_id() const {
   return _id;
 }
 

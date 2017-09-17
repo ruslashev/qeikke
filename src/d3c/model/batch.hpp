@@ -8,20 +8,15 @@
 #include <GL/glew.h>
 
 class Batch {
-  unsigned int m_vertexarrayobject;
-  unsigned int m_vertexbuffer;
-  unsigned int m_indexbuffer;
-
-  unsigned int m_num_vertices;
-  unsigned int m_num_indices;
-  unsigned int m_vertex_size;
-  unsigned int m_index_size;
+  unsigned int _vao, _vbo, _ebo;
+  unsigned int _num_indices;
+  unsigned int _element_size;
 public:
-  Batch(void *vertex_array, const unsigned int vertex_count
-      , const unsigned int vsize, void *index_array
-      , const unsigned int index_count, const unsigned int isize
+  Batch(const void *vertex_array, unsigned int vertex_count
+      , unsigned int vertex_size, const void *element_array
+      , unsigned int element_count, unsigned int element_size
       , unsigned int vertex_pos_attr, unsigned int texture_coord_attr
       , unsigned int vertex_normal_attr);
-  void render();
+  void render() const;
 };
 
