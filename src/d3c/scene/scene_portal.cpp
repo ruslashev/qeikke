@@ -44,16 +44,13 @@ void Portal_area::render(const camera *cam, const glm::ivec2 &min
   m_frame_rendered = this_frame;
   ++portal_debug_areas_rendered;
 
-  // set renderport, prevent visible 'rounding-error' caps
-  renderer->set_renderport(min.x, min.y, max.x - min.x + 1, max.y - min.y + 1);
-
   for (size_t j = 0; j < m_batches.size(); ++j) {
     glBindTexture(GL_TEXTURE_2D, m_textures[j]->get_id());
     m_batches[j]->render();
   }
 
-  for (size_t j = 0; j < m_portals.size(); ++j)
-    m_portals[j]->render_from_area(cam, m_index, min, max);
+  for (Portal_portal *portal : m_portals)
+    portal->render_from_area(cam, m_index, min, max);
 }
 
 void Portal_area::add_portal(Portal_portal *portal) {
@@ -105,16 +102,16 @@ Portal_portal::Portal_portal(Scene_portal *scene)
 void Portal_portal::render_from_area(const camera *cam, int index
     , glm::ivec2 min, glm::ivec2 max) {
   // check if vertices are projected for visibility check
-  if (m_frame_rendered != g_screen->get_frame_idx()) {
-    m_frame_rendered = g_screen->get_frame_idx();
-    if (!(m_visible = check_visibility(cam))) // portal is outside frustrum
-      return;
-    transform_points();
-  }
-
-  if (!m_visible)
+  unsigned long long this_frame = g_screen->get_frame_idx();
+  if (m_frame_rendered == this_frame)
     return;
-  else if (m_visible < 0) {
+  m_frame_rendered = this_frame;
+  m_visible = check_visibility(cam);
+  if (!m_visible) // portal is outside frustrum
+    return;
+  transform_points();
+
+  if (m_visible < 0) {
     // intersection of portal and front plane of frustum
     // set min and max to renderport
     m_transformed_min = glm::ivec2(0, 0);
@@ -166,9 +163,9 @@ void Portal_portal::read_from_file(std::ifstream &file) {
   m_area_neg = m_scene->get_area_index_by_name("_area"
       + std::to_string(neg_area));
 
-  if (m_area_pos>=0)
+  if (m_area_pos >= 0)
     m_scene->get_area(m_area_pos)->add_portal(this);
-  if (m_area_neg>=0)
+  if (m_area_neg >= 0)
     m_scene->get_area(m_area_neg)->add_portal(this);
 }
 
@@ -203,7 +200,7 @@ Scene_portal::~Scene_portal() {
     delete portal;
 }
 
-void Scene_portal::render(camera *cam) {
+void Scene_portal::render(const camera *cam) {
   int start_area = get_area(cam->pos);
   glm::ivec2 min = glm::ivec2(0, 0)
     , max = glm::ivec2(g_screen->get_window_width()
@@ -216,9 +213,6 @@ void Scene_portal::render(camera *cam) {
   else // position in the "void", render all areas
     for (Portal_area *area : m_areas)
       area->render(cam, min, max);
-
-  renderer->set_renderport(0, 0, g_screen->get_window_width()
-      , g_screen->get_window_height());
 }
 
 void Scene_portal::load_proc(const std::string &name) {

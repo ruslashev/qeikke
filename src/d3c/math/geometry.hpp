@@ -7,9 +7,6 @@ struct Plane {
   Plane() {}
   Plane(const glm::vec3 &n_normal, float n_d) : normal(n_normal), d(n_d) {}
 
-  ~Plane() {}
-
-  // vector algebra
   inline void normalize() {
     float inv_length = 1.0f / normal.length();
     normal *= inv_length;

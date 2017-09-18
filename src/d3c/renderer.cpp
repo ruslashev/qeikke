@@ -6,7 +6,6 @@
 #include "../engine/math.hh"
 
 #include <GL/glew.h>
-#include <GL/glu.h>
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -89,16 +88,9 @@ void Renderer::set_viewport(int left, int top, int width, int height) {
       , (float)g_screen->get_window_width()
         / (float)g_screen->get_window_height()
       , 0.1f, 20000.f);
-
-  set_renderport(left, top, width, height);
 }
 
-void Renderer::set_renderport(const int left, const int top, const int width
-    , const int height) {
-  // glScissor(left, top, width, height);
-}
-
-void Renderer::set_view(camera *cam) {
+void Renderer::set_view(const camera *cam) {
   _view = cam->compute_view_mat();
 
   _sp.use_this_prog();

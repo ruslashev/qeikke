@@ -60,11 +60,11 @@ public:
 
 class Scene_portal {
   std::vector<Portal_area*> m_areas;
-  std::vector<Portal_portal*> m_portals;
+  std::vector<const Portal_portal*> m_portals;
   std::vector<Doom3_node> m_nodes;
 public:
   ~Scene_portal();
-  void render(camera *cam);
+  void render(const camera *cam);
   void load_proc(const std::string &name);
   Portal_area* get_area(int i);
   int get_area(const glm::vec3 &position);
