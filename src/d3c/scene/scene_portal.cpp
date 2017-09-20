@@ -106,12 +106,12 @@ void Portal_portal::render_from_area(const camera *cam, int index
   if (m_frame_rendered == this_frame)
     return;
   m_frame_rendered = this_frame;
-  m_visible = check_visibility(cam);
-  if (!m_visible) // portal is outside frustrum
+  int visible = check_visibility(cam);
+  if (!visible) // portal is outside frustrum
     return;
   transform_points();
 
-  if (m_visible < 0) {
+  if (visible < 0) {
     // intersection of portal and front plane of frustum
     // set min and max to renderport
     m_transformed_min = glm::ivec2(0, 0);

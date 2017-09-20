@@ -37,7 +37,7 @@ public:
 };
 
 class Portal_portal {
-  Scene_portal* m_scene;
+  Scene_portal *m_scene;
 
   glm::ivec2 m_transformed_min;
   glm::ivec2 m_transformed_max;
@@ -48,7 +48,6 @@ class Portal_portal {
   int m_area_neg;
 
   unsigned long long m_frame_rendered;
-  int m_visible;
 public:
   Portal_portal(Scene_portal *scene);
   void render_from_area(const camera *cam, int index, glm::ivec2 min

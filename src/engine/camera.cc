@@ -1,5 +1,5 @@
 #include "camera.hh"
-#include "../engine/utils.hh"
+#include "utils.hh"
 
 camera::camera()
   : pitch(0)
@@ -11,7 +11,7 @@ camera::camera()
 }
 
 const float sensitivity = 3.f, m_yaw = 0.022, m_pitch = 0.022
-, pitch_max = 89.998f;
+, pitch_max = 89.976f; // carefully choosen constant so as not to cause bugs
 void camera::update_view_angles(float xrel, float yrel) {
   yaw += xrel * sensitivity * m_yaw;
   pitch -= yrel * sensitivity * m_pitch;
@@ -44,7 +44,6 @@ void camera::update_position(double dt, int move, int strafe) {
 }
 
 glm::vec3 camera::compute_view_dir() const {
-  // TODO called twice per frame, cache this?
   const float pitch_rad = glm::radians(pitch), yaw_rad = glm::radians(yaw);
   return glm::vec3(cos(yaw_rad) * cos(pitch_rad), sin(pitch_rad)
       , sin(yaw_rad) * cos(pitch_rad));

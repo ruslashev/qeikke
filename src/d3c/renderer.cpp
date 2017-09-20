@@ -14,7 +14,7 @@ Renderer::Renderer()
   glClearColor(0, 0, 0, 1);
 
   glEnable(GL_DEPTH_TEST);
-  glEnable(GL_SCISSOR_TEST);
+  // glEnable(GL_SCISSOR_TEST);
   // glEnable(GL_CULL_FACE);
   // glCullFace(GL_FRONT);
   glEnable(GL_BLEND);
