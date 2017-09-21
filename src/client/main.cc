@@ -2,7 +2,6 @@
 #include "../engine/screen.hh"
 #include "../engine/camera.hh"
 
-#include "../d3c/misc/log.hpp"
 #include "../d3c/model/batch.hpp"
 #include "../d3c/scene/scene_portal.hpp"
 #include "../d3c/physics/collision_set_bsp.hpp"

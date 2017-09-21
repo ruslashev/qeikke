@@ -171,7 +171,30 @@ void Portal_portal::read_from_file(std::ifstream &file) {
 
 // 0 = invisible (outside frustrum), 1 = visible, -1 = intersects frontplane
 int Portal_portal::check_visibility(const camera *cam) {
-  return 1;
+  bool all_front = true, all_back = true;
+  // check front plane
+  for (int i = 0; i < m_points.size(); ++i)
+    if (!renderer->get_frustum_plane(frustum_plane_front).is_in_front(m_points[i]))
+      all_front = false;
+    else
+      all_back = false;
+
+  if (all_back)
+    return 0;
+
+  // check other planes
+  for (int j = frustum_plane_front + 1; j < frustum_plane_back; ++j) {
+    bool all_back = true;
+    for (int i = 0; i < m_points.size(); ++i)
+      if (renderer->get_frustum_plane(j).is_in_front(m_points[i])) {
+        all_back = false;
+        break;
+      }
+    if (all_back)
+      return 0;
+  }
+
+  return all_front ? 1 : -1;
 }
 
 void Portal_portal::transform_points() {

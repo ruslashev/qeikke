@@ -9,6 +9,35 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+void Renderer::_update_frustum() {
+  _frustum_planes[frustum_plane_right] = Plane(glm::vec3(_mvp[0][3] - _mvp[0][0]
+        , _mvp[1][3] - _mvp[1][0], _mvp[2][3] - _mvp[2][0])
+      , _mvp[3][3] - _mvp[3][0]);
+
+  _frustum_planes[frustum_plane_left] = Plane(glm::vec3(_mvp[0][3] + _mvp[0][0]
+        , _mvp[1][3] + _mvp[1][0], _mvp[2][3] + _mvp[2][0])
+      , _mvp[3][3] + _mvp[3][0]);
+
+  _frustum_planes[frustum_plane_bottom] = Plane(glm::vec3(_mvp[0][3] + _mvp[0][1]
+        , _mvp[1][3] + _mvp[1][1], _mvp[2][3] + _mvp[2][1])
+      , _mvp[3][3] + _mvp[3][1]);
+
+  _frustum_planes[frustum_plane_top] = Plane(glm::vec3(_mvp[0][3] - _mvp[0][1]
+        , _mvp[1][3] - _mvp[1][1], _mvp[2][3] - _mvp[2][1])
+      , _mvp[3][3] - _mvp[3][1]);
+
+  _frustum_planes[frustum_plane_back] = Plane(glm::vec3(_mvp[0][3] - _mvp[0][2]
+        , _mvp[1][3] - _mvp[1][2], _mvp[2][3] - _mvp[2][2])
+      , _mvp[3][3] - _mvp[3][2]);
+
+  _frustum_planes[frustum_plane_front] = Plane(glm::vec3(_mvp[0][3] + _mvp[0][2]
+        , _mvp[1][3] + _mvp[1][2], _mvp[2][3] + _mvp[2][2])
+      , _mvp[3][3] + _mvp[3][2]);
+
+  for (int i = 0; i < 6; ++i)
+    _frustum_planes[i].normalize();
+}
+
 Renderer::Renderer()
   : _sp(shaders::map_vert, shaders::map_frag) {
   glClearColor(0, 0, 0, 1);
@@ -61,7 +90,7 @@ void Renderer::upload_textures() {
 }
 
 bool Renderer::project(const glm::vec3 &vec, int &x, int &y) {
-  glm::vec4 out = _projection * _view * glm::vec4(vec, 1.f);
+  glm::vec4 out = _mvp * glm::vec4(vec, 1.f);
 
   if (out.w <= 0.f) {
     x = y = 0;
@@ -92,13 +121,12 @@ void Renderer::set_viewport(int left, int top, int width, int height) {
 
 void Renderer::set_view(const camera *cam) {
   _view = cam->compute_view_mat();
+  _mvp = _projection * _view;
+
+  _update_frustum();
 
   _sp.use_this_prog();
-  glm::mat4 mvp = _projection * _view;
-  glUniformMatrix4fv(_mvp_unif, 1, GL_FALSE, glm::value_ptr(mvp));
+  glUniformMatrix4fv(_mvp_unif, 1, GL_FALSE, glm::value_ptr(_mvp));
   glUniform1i(_texture_sampler_unif, 0);
-
-  // update frustum of camera
-  // camera->update_frustum();
 }
 
