@@ -13,13 +13,12 @@
 screen *g_screen = new screen("qeikke", 800, 600);
 
 Renderer *renderer = new Renderer();
-bool use_collision = true, tree_debug = false;
 Scene_portal scene;
 Collision_set_bsp bsp;
 
 camera *cam = new camera();
 int move = 0, strafe = 0;
-bool wireframe = false;
+bool wireframe = false, collision = true;
 
 static void key_event(char key, bool down) {
   static bool forward = false, backward = false, left = false, right = false;
@@ -29,6 +28,7 @@ static void key_event(char key, bool down) {
     case 'd': right    = down; break;
     case 'a': left     = down; break;
     case 'f': if (down) wireframe = !wireframe; break;
+    case 'c': if (down) collision = !collision; break;
     default: break;
   }
   if (forward == backward)
@@ -75,7 +75,7 @@ static void update(double dt, double t) {
   cam->update_position(dt, move, strafe);
   glm::vec3 end = cam->pos;
 
-  if (use_collision) {
+  if (collision) {
     glm::vec3 end_collided = start;
     while (end_collided != end) {
       end_collided = end;
@@ -87,6 +87,11 @@ static void update(double dt, double t) {
 
 static void draw(double alpha) {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  if (wireframe)
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  else
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
   renderer->set_view(cam);
 

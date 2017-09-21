@@ -36,7 +36,7 @@ Renderer::~Renderer() {
     delete it->second;
 }
 
-texture* Renderer::get_texture_from_file(const std::string & name) {
+texture* Renderer::get_texture_from_file(const std::string &name) {
   if (m_texture_map.find(name) != m_texture_map.end())
     return m_texture_map[name];
   image *img = new image(name);
@@ -47,7 +47,7 @@ texture* Renderer::get_texture_from_file(const std::string & name) {
   return tex;
 }
 
-texture* Renderer::create_texture(const std::string & name) {
+texture* Renderer::create_texture(const std::string &name) {
   texture *tex = new texture();
   m_texture_map[name] = tex;
   return tex;

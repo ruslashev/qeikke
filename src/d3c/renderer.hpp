@@ -24,8 +24,8 @@ public:
 
   Renderer();
   ~Renderer();
-  texture* get_texture_from_file(const std::string & name);
-  texture* create_texture(const std::string & name);
+  texture* get_texture_from_file(const std::string &name);
+  texture* create_texture(const std::string &name);
   void upload_textures();
   bool project(const glm::vec3 &vec, int &x, int &y);
   void set_viewport(int left, int top, int width, int height);
