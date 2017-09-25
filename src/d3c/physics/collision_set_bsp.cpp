@@ -1,5 +1,4 @@
 #include "collision_set_bsp.hpp"
-#include "../misc/log.hpp"
 #include "../math/geometry.hpp"
 #include "../parse_common.hh"
 #include "../../engine/utils.hh"
@@ -76,10 +75,8 @@ void Kd_tree_node::trace(const glm::vec3 &start, glm::vec3 &end, float radius) {
 
 bool Collision_brush::read_from_file(std::ifstream &file) {
   std::string val = stream_get_next_value(file);
-  if (val == "EOF" || val == "collisionModel") {
-    log_debug << "end of file" << endl;
+  if (val == "EOF" || val == "collisionModel")
     return false;
-  }
   int num_planes = atoi(val.c_str());
   m_planes.resize(num_planes);
   for (int i = 0; i < num_planes; ++i) {
@@ -127,7 +124,7 @@ void Collision_brush::trace(const glm::vec3 &start, const glm::vec3 &end
     if (-10.f < min_fraction && min_fraction < 0.f)
       output = end - (min_fraction - EPSILON) * m_planes[min_plane].normal;
     else
-      log_warning << "min_fraction to large! (" << min_fraction << ")" << endl;
+      warning_ln("min_fraction too large: %f", (double)min_fraction);
   }
 }
 

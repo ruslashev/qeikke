@@ -1,5 +1,4 @@
 #include "batch.hpp"
-#include "../misc/log.hpp"
 #include "../../engine/utils.hh"
 
 Batch::Batch(const void *vertex_array, unsigned int vertex_count

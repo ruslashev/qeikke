@@ -1,5 +1,4 @@
 #include "renderer.hpp"
-#include "misc/log.hpp"
 #include "model/batch.hpp"
 #include "../engine/screen.hh"
 #include "../engine/shaders.hh"
