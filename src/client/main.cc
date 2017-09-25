@@ -13,7 +13,7 @@ screen *g_screen = new screen("qeikke", 800, 600);
 
 Renderer *renderer = new Renderer();
 Scene_portal scene;
-Collision_set_bsp bsp;
+collision_set_bsp bsp;
 
 camera *cam = new camera();
 int move = 0, strafe = 0;

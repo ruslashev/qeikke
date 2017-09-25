@@ -10,47 +10,49 @@
 
 #define EPSILON 0.001f
 
-Kd_tree_node::Kd_tree_node()
+collision_set_bsp::kd_tree_node::kd_tree_node()
   : child_front(nullptr)
   , child_back(nullptr) {
 }
 
-Kd_tree_node::~Kd_tree_node() {
+collision_set_bsp::kd_tree_node::~kd_tree_node() {
   if (child_front)
     delete child_front;
   if (child_back)
     delete child_back;
 }
 
-void Kd_tree_node::read_from_file(std::ifstream &file) {
+void collision_set_bsp::kd_tree_node::read_from_file(std::ifstream &file) {
   index = stream_get_next_int(file);
   distance = stream_get_next_float(file);
   if (index >= 0) { // has children
-    child_front = new Kd_tree_node();
-    child_back = new Kd_tree_node();
+    child_front = new kd_tree_node();
+    child_back = new kd_tree_node();
     child_front->read_from_file(file);
     child_back->read_from_file(file);
   }
 }
 
-void Kd_tree_node::insert_brush(const Collision_brush *brush) {
+void collision_set_bsp::kd_tree_node::insert_brush(
+    const brush *b) {
   if (index >= 0) { // have children, find the right child for the brush
     // very fast plane check
-    if (brush->m_min[index] >= distance && brush->m_max[index] >= distance)
-      child_front->insert_brush(brush);
-    else if (brush->m_min[index] <= distance && brush->m_max[index] <= distance)
-      child_back->insert_brush(brush);
+    if (b->bb_min[index] >= distance && b->bb_max[index] >= distance)
+      child_front->insert_brush(b);
+    else if (b->bb_min[index] <= distance && b->bb_max[index] <= distance)
+      child_back->insert_brush(b);
     else {
       // plane interstects brush
-      // m_brushes.push_back(brush); (insert in both children!!
-      child_front->insert_brush(brush);
-      child_back->insert_brush(brush);
+      // m_brushes.push_back(b); (insert in both children!!
+      child_front->insert_brush(b);
+      child_back->insert_brush(b);
     }
   } else
-    m_brushes.push_back(brush);
+    m_brushes.push_back(b);
 }
 
-void Kd_tree_node::trace(const glm::vec3 &start, glm::vec3 &end, float radius) {
+void collision_set_bsp::kd_tree_node::trace(const glm::vec3 &start
+    , glm::vec3 &end, float radius) {
   // walk through the tree to find brushes
   for (size_t i = 0; i < m_brushes.size(); ++i)
     m_brushes[i]->trace(start, end, radius, end);
@@ -73,7 +75,7 @@ void Kd_tree_node::trace(const glm::vec3 &start, glm::vec3 &end, float radius) {
   }
 }
 
-bool Collision_brush::read_from_file(std::ifstream &file) {
+bool collision_set_bsp::brush::read_from_file(std::ifstream &file) {
   std::string val = stream_get_next_value(file);
   if (val == "EOF" || val == "collisionModel")
     return false;
@@ -85,20 +87,19 @@ bool Collision_brush::read_from_file(std::ifstream &file) {
     m_planes[i].normal.y = stream_get_next_float(file);
     m_planes[i].d = stream_get_next_float(file);
   }
-  // bounding box
-  m_min.x = stream_get_next_float(file);
-  m_min.z = -stream_get_next_float(file);
-  m_min.y = stream_get_next_float(file);
-  m_max.x = stream_get_next_float(file);
-  m_max.z = -stream_get_next_float(file);
-  m_max.y = stream_get_next_float(file);
+  bb_min.x = stream_get_next_float(file);
+  bb_min.z = -stream_get_next_float(file);
+  bb_min.y = stream_get_next_float(file);
+  bb_max.x = stream_get_next_float(file);
+  bb_max.z = -stream_get_next_float(file);
+  bb_max.y = stream_get_next_float(file);
   m_solid = stream_get_next_string(file);
 
   return true;
 }
 
-void Collision_brush::trace(const glm::vec3 &start, const glm::vec3 &end
-    , float radius, glm::vec3 &output) const {
+void collision_set_bsp::brush::trace(const glm::vec3 &start
+    , const glm::vec3 &end, float radius, glm::vec3 &output) const {
   float min_fraction = -99999.0f;
   int min_plane = -1;
 
@@ -128,24 +129,24 @@ void Collision_brush::trace(const glm::vec3 &start, const glm::vec3 &end
   }
 }
 
-Collision_set_bsp::Collision_set_bsp()
+collision_set_bsp::collision_set_bsp()
   : m_kd_tree(nullptr) {
 }
 
-Collision_set_bsp::~Collision_set_bsp() {
-  for (const Collision_brush *brush : m_brushes)
-    delete brush;
+collision_set_bsp::~collision_set_bsp() {
+  for (const brush *b : m_brushes)
+    delete b;
   if (m_kd_tree)
     delete m_kd_tree;
 }
 
-void Collision_set_bsp::trace(const glm::vec3 &start, glm::vec3 &end
+void collision_set_bsp::trace(const glm::vec3 &start, glm::vec3 &end
     , float radius) {
   if (m_kd_tree)
     m_kd_tree->trace(start, end, radius);
 }
 
-void Collision_set_bsp::load_cm(const std::string &name) {
+void collision_set_bsp::load_cm(const std::string &name) {
   std::ifstream file(name.c_str());
   assertf(file, "unable to open \"%s\"", name.c_str());
 
@@ -165,17 +166,17 @@ void Collision_set_bsp::load_cm(const std::string &name) {
          */
     } else if (s == "brushes") {
       int brush_memory = stream_get_next_int(file);
-      Collision_brush *brush = new Collision_brush();
-      while (brush->read_from_file(file)) {
-        m_brushes.push_back(brush);
+      brush *b = new brush();
+      while (b->read_from_file(file)) {
+        m_brushes.push_back(b);
         if (m_kd_tree)
-          m_kd_tree->insert_brush(brush);
-        brush = new Collision_brush();
+          m_kd_tree->insert_brush(b);
+        b = new brush();
       }
-      delete brush;
+      delete b;
       break; // hack, only load first collision model
     } else if (s == "nodes") {
-      m_kd_tree = new Kd_tree_node();
+      m_kd_tree = new kd_tree_node();
       m_kd_tree->read_from_file(file);
     }
   }
