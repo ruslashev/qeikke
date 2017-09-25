@@ -20,11 +20,9 @@ $(shell mkdir -p .objs/engine >/dev/null)
 # TODO: introduced in porting doom3_collision
 $(shell mkdir -p .objs/d3c >/dev/null)
 $(shell mkdir -p .objs/d3c/math >/dev/null)
-$(shell mkdir -p .objs/d3c/misc >/dev/null)
 $(shell mkdir -p .objs/d3c/physics >/dev/null)
 $(shell mkdir -p .objs/d3c/scene >/dev/null)
 $(shell mkdir -p .objs/d3c/model >/dev/null)
-$(shell mkdir -p .objs/d3c/renderer_opengl >/dev/null)
 
 all: $(BIN)
 	./qeikke
